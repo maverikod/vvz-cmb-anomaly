@@ -1,0 +1,136 @@
+---
+alwaysApply: true
+---
+# Стандарты именования переменных, методов, классов
+
+## Классы
+
+### ✅ Как надо:
+```python
+class GaiaClient(Client):           # CamelCase для классов
+class GaiaDriver(Driver):           # Суффикс по типу
+class GaiaNetworkDriver(NetworkDriver):
+class GaiaRequest(Request):
+class GetAstronomyDataCommand(Command):
+```
+
+### ❌ Как не надо:
+```python
+class gaia_client(Client):          # lowercase
+class GaiaDriverClass(Driver):      # избыточный суффикс
+class gaiaNetworkDriver(NetworkDriver):  # camelCase
+```
+
+## Методы
+
+### ✅ Как надо:
+```python
+def get_data(self, what, from_, filters, offset, limit, format) -> Result:
+def create(self, request: Request) -> dict:
+def read(self, request: Request) -> dict:
+def fetch(self, request: Request) -> dict:
+def metadata(cls) -> dict:
+def man(cls) -> ManPage:
+def validate(self) -> None:
+def is_valid(self) -> bool:
+def has_cache(self, request: Request) -> bool:
+```
+
+### ❌ Как не надо:
+```python
+def GetData(self, what, from_, filters):  # PascalCase
+def create_data(self, request):           # избыточные слова
+def fetchData(self, request):             # camelCase
+def get_metadata(cls):                    # избыточный префикс
+```
+
+## Переменные
+
+### ✅ Как надо:
+```python
+cached_data = self.driver.read(request)
+network_data = self.network_driver.fetch(request)
+request_params = {"what": what, "where": from_}
+is_valid_request = request.validate()
+has_cached_result = self.driver.has_cache(request)
+max_retry_count = 3
+base_url = "https://api.example.com"
+```
+
+### ❌ Как не надо:
+```python
+cachedData = self.driver.read(request)    # camelCase
+networkData = self.network_driver.fetch(request)
+requestParams = {"what": what}            # camelCase
+isValidRequest = request.validate()       # camelCase
+MAX_RETRY_COUNT = 3                       # константа как переменная
+```
+
+## Константы
+
+### ✅ Как надо:
+```python
+MAX_RETRY_COUNT = 3
+DEFAULT_TIMEOUT = 30
+BASE_URL = "https://api.example.com"
+CACHE_DIR = "cache"
+DEFAULT_FORMAT = "npy"
+```
+
+### ❌ Как не надо:
+```python
+maxRetryCount = 3                         # переменная как константа
+default_timeout = 30                      # lowercase
+baseUrl = "https://api.example.com"       # camelCase
+```
+
+## Параметры методов
+
+### ✅ Как надо:
+```python
+def get_data(self, 
+             what: Union[str, List[str]] = None,
+             from_: str = None,           # from_ для избежания конфликта
+             filters: Dict[str, Any] = None,
+             offset: int = None,
+             limit: int = None,
+             format: str = 'npy') -> Result:
+```
+
+### ❌ Как не надо:
+```python
+def get_data(self, 
+             What: str = None,            # PascalCase
+             From: str = None,            # PascalCase
+             Filters: dict = None,        # PascalCase
+             OFFSET: int = None,          # UPPERCASE
+             Limit: int = None):          # PascalCase
+```
+
+## Boolean переменные и методы
+
+### ✅ Как надо:
+```python
+is_valid = request.validate()
+has_cache = self.driver.has_cache(request)
+should_retry = error.is_retryable()
+can_fetch = self.network_driver.is_available()
+is_network_error = isinstance(error, NetworkError)
+```
+
+### ❌ Как не надо:
+```python
+valid = request.validate()                # неясно что возвращает
+cache = self.driver.has_cache(request)    # неясно что возвращает
+retry = error.is_retryable()              # неясно что возвращает
+```
+
+## Принципы
+
+1. **CamelCase** для классов
+2. **lowercase_with_underscores** для методов и переменных
+3. **UPPERCASE_WITH_UNDERSCORES** для констант
+4. **Префиксы is_/has_/should_/can_** для boolean
+5. **Суффиксы по типу** (Client, Driver, Request, Command)
+6. **from_** для избежания конфликта с ключевым словом
+7. **Описательные имена** без аббревиатур 

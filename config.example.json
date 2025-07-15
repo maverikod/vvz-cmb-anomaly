@@ -1,0 +1,9 @@
+{
+  "data_file": "data/COM_CMB_IQU-smica_2048_R3.00_full.fits",
+  "mask_file": "data/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits",
+  "anomaly_yaml": "data/cmb_anomalies.yaml",
+  "s_threshold": 1.0,
+  "step_deg": 5,
+  "top_n": 20,
+  "radii_deg": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+} 

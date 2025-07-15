@@ -1,0 +1,15 @@
+cache/
+.venv/
+data/
+results/
+*.npy
+*.npz
+*.pt
+*.pth
+*.pkl
+*.pt
+*.pth
+*.pkl
+*.scv
+__pycache__/
+**/__pycache__/

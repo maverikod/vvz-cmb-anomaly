@@ -1,1 +1,206 @@
 # vvz-cmb-anomaly
+
+## Installation
+
+```bash
+pip install .
+```
+
+## Overview
+
+This application provides a full pipeline for statistical analysis and anomaly detection on Planck CMB maps (SMICA 2018), including multiscale search, clustering, galactic correlation, and dust correlation.
+
+## Command Line Interface (CLI)
+
+### 1. Convert FITS to NumPy (.npy)
+Convert Planck SMICA FITS files (temperature or mask) to NumPy arrays for fast analysis.
+
+```bash
+cmb-anomaly convert -i data/COM_CMB_IQU-smica_2048_R3.00_full.fits -o data/cmb_temperature.npy
+cmb-anomaly convert -i data/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits -o data/mask_common.npy
+```
+- **Input:** FITS file
+- **Output:** .npy file (NumPy array)
+
+### 2. Multiscale Anomaly Search
+Automatic search for anomalous regions at multiple radii (scales).
+
+#### With mask (recommended for cosmological analysis):
+```bash
+cmb-anomaly multiscale-anomaly --temperature data/cmb_temperature.npy --mask data/mask_common.npy --results results_anomalies_multi.csv
+```
+- **Input:** .npy temperature, .npy mask
+- **Output:** `results_anomalies_multi.csv` (all anomalies with mask)
+
+#### Without mask (for galactic/environmental analysis):
+```bash
+cmb-anomaly multiscale-anomaly --temperature data/cmb_temperature.npy --no-mask --results results_anomalies_nomask.csv
+```
+- **Input:** .npy temperature
+- **Output:** `results_anomalies_nomask.csv` (all anomalies, full sky)
+
+### 3. Scale Clustering Analysis
+Test for clustering of anomaly radii at discrete theoretical scales (no mask).
+
+```bash
+cmb-anomaly scale-clustering --csv results_anomalies_nomask.csv --alpha 0.7 --top 10
+```
+- **Input:** CSV with anomalies (no mask)
+- **Output:** Histogram, plot (`anomaly_radius_clustering.png`), console/table output
+
+### 4. Galactic Correlation Analysis
+Analyze the correlation of anomalies with Galactic structures (disk, halo, etc).
+
+```bash
+cmb-anomaly galactic-correlation --csv results_anomalies_nomask.csv --radii 1 5 25 --out-prefix galactic_corr
+```
+- **Input:** CSV with anomalies (no mask)
+- **Output:**
+  - For each scale: CSV with all anomalies and their galactic zone (`galactic_corr_anomalies_1deg.csv`, ...)
+  - Histograms by latitude/longitude, scatter plots, zone statistics (`galactic_corr_lat_hist_1deg.png`, ...)
+  - Text files with zone fractions (`galactic_corr_zones_1deg.txt`, ...)
+
+### 5. Dust Correlation Analysis
+Analyze statistical correlation between CMB anomalies and a dust map (Planck, SFD, etc).
+
+```bash
+cmb-anomaly dust-correlation --anomalies galactic_corr_anomalies_1deg.csv --dust path/to/dust_map.fits --out-prefix dust_corr
+```
+- **Input:**
+  - CSV with anomalies (with l, b, radius_deg, zone)
+  - FITS file with dust map (HEALPix, full sky)
+- **Output:**
+  - For each scale/zone: CSV with anomalies and dust values (`dust_corr_anomalies_thin_disk_1deg.csv`, ...)
+  - Histograms of dust in anomalies vs control (`dust_corr_hist_thin_disk_1deg.png`, ...)
+  - Overlay map: dust + anomalies (`dust_corr_overlay_thin_disk_1deg.png`, ...)
+  - Text files with statistics and p-value (`dust_corr_stats_thin_disk_1deg.txt`, ...)
+  - Summary CSV with p-values for all scales/zones (`dust_corr_summary.csv`)
+
+### 6. Region Match (Known Anomaly Search)
+Find and analyze regions similar to known anomalies (from YAML) among detected anomalies.
+
+```bash
+cmb-anomaly region-match --anomalies results_anomalies_multi.csv --known-yaml data/cmb_anomalies.yaml --output matched_regions.csv --radius-tol 0.2 --top 3
+```
+- **Input:**
+  - CSV with found anomalies (from multiscale-anomaly or galactic-correlation)
+  - YAML file with known regions (must contain l, b, radius_deg, [type])
+- **Output:**
+  - CSV with best matches for each known region (matched_regions.csv)
+
+## Full Analysis Workflow
+
+1. **Convert FITS to .npy:**
+   - `convert` command for temperature and mask.
+2. **Run anomaly search:**
+   - `multiscale-anomaly` with mask for cosmology, without mask for galactic analysis.
+3. **Analyze scale clustering:**
+   - `scale-clustering` on results without mask.
+4. **Analyze galactic correlation:**
+   - `galactic-correlation` on results without mask.
+5. **Analyze dust correlation:**
+   - `dust-correlation` on anomalies and dust map.
+6. **Find regions similar to known anomalies:**
+   - `region-match` to compare detected anomalies with known regions from YAML.
+
+## Example Sequence
+
+```bash
+# 1. Convert data
+cmb-anomaly convert -i data/COM_CMB_IQU-smica_2048_R3.00_full.fits -o data/cmb_temperature.npy
+cmb-anomaly convert -i data/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits -o data/mask_common.npy
+
+# 2. Find anomalies (with and without mask)
+cmb-anomaly multiscale-anomaly --temperature data/cmb_temperature.npy --mask data/mask_common.npy --results results_anomalies_multi.csv
+cmb-anomaly multiscale-anomaly --temperature data/cmb_temperature.npy --no-mask --results results_anomalies_nomask.csv
+
+# 3. Scale clustering (no mask)
+cmb-anomaly scale-clustering --csv results_anomalies_nomask.csv --alpha 0.7 --top 10
+
+# 4. Galactic correlation (no mask)
+cmb-anomaly galactic-correlation --csv results_anomalies_nomask.csv --radii 1 5 25 --out-prefix galactic_corr
+
+# 5. Dust correlation (no mask, for each scale/zone)
+cmb-anomaly dust-correlation --anomalies galactic_corr_anomalies_1deg.csv --dust path/to/dust_map.fits --out-prefix dust_corr
+```
+
+## Output Files
+- `results_anomalies_multi.csv` — anomalies with mask (cosmological)
+- `results_anomalies_nomask.csv` — anomalies without mask (full sky)
+- `anomaly_radius_clustering.png` — scale clustering plot
+- `galactic_corr_anomalies_1deg.csv`, ... — all anomalies with galactic zone for each scale
+- `galactic_corr_lat_hist_1deg.png`, ... — latitude histograms
+- `galactic_corr_zones_1deg.txt`, ... — zone statistics
+- `dust_corr_anomalies_thin_disk_1deg.csv`, ... — anomalies with dust values for each scale/zone
+- `dust_corr_hist_thin_disk_1deg.png`, ... — dust histograms
+- `dust_corr_overlay_thin_disk_1deg.png`, ... — overlay maps
+- `dust_corr_stats_thin_disk_1deg.txt`, ... — statistics and p-values
+- `dust_corr_summary.csv` — summary table for all scales/zones
+
+## Help
+- See `cmb-anomaly --help` or `cmb-anomaly --help-sequence` for all options and recommended workflow.
+
+## Запуск отдельных шагов пайплайна
+
+Можно запускать как весь пайплайн, так и отдельные шаги с помощью ключа `--only`:
+
+```
+python run_pipeline.py --only <step>
+```
+
+Где `<step>` — один из:
+- convert
+- multiscale
+- clustering
+- galactic_corr
+- dust_corr
+- region_match
+- catalog_compare
+- dust_profile
+
+**Примеры:**
+- Только конвертация: `python run_pipeline.py --only convert`
+- Только поиск аномалий: `python run_pipeline.py --only multiscale`
+- Только кластеризация: `python run_pipeline.py --only clustering`
+- Только морфология пыли: `python run_pipeline.py --only dust_profile`
+
+## Исходные файлы данных
+
+| Файл | Назначение | Формат | Источник/описание |
+|------|------------|--------|-------------------|
+| `data/COM_CMB_IQU-smica_2048_R3.00_full.fits` | Карта температуры космического микроволнового фона (CMB), компонент SMICA, полное небо, разрешение NSIDE=2048. Используется как основной температурный слой для поиска аномалий. | FITS | [ESA Planck Legacy Archive](https://pla.esac.esa.int/#maps) (SMICA CMB map, Release 3.00) |
+| `data/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits` | Маска для выделения областей неба, пригодных для анализа CMB (исключает Галактику и яркие источники). Применяется для ограничения анализа только на чистых участках неба. | FITS | [ESA Planck Legacy Archive](https://pla.esac.esa.int/#maps) (Common CMB mask, Intensity, NSIDE=2048) |
+| `data/COM_CompMap_dust-commrul_2048_R1.00.fits` | Карта распределения галактической пыли (dust emission), используется для корреляционного анализа с аномалиями CMB. | FITS | [ESA Planck Legacy Archive](https://pla.esac.esa.int/#maps) (Dust emission map, Release 1.00) |
+| `data/NHI_HPX.fits.gz` | Карта столбовой плотности нейтрального водорода (HI), используется для анализа связи аномалий CMB с межзвёздной средой. | FITS (сжатый) | [LAB Survey of Galactic HI](https://www.astro.uni-bonn.de/hisurvey/profile/) (Leiden/Argentine/Bonn HI Survey) |
+
+**Все файлы должны быть размещены в каталоге `data/` перед запуском пайплайна.**
+
+## 🚀 Ускорение на GPU (CUDA)
+
+Для ускорения вычислений на GPU используется библиотека [CuPy](https://cupy.dev/), полностью совместимая с NumPy.
+
+### Как включить поддержку CUDA:
+
+1. Установите пакет для вашей версии CUDA (например, для CUDA 12.x):
+   ```bash
+   pip install cupy-cuda12x
+   ```
+   Если у вас другая версия CUDA, выберите соответствующий пакет: [см. документацию CuPy](https://docs.cupy.dev/en/stable/install.html#installing-cupy).
+
+2. Проверьте, что CUDA и GPU видны из Python:
+   ```python
+   import cupy
+   print(cupy.cuda.runtime.getDeviceCount())
+   print(cupy.cuda.runtime.getDeviceProperties(0))
+   ```
+   Если выводится информация о GPU — всё работает.
+
+3. При запуске пайплайна в начале будет выведено:
+   - `[array_backend] CUDA detected: CuPy backend, ...` — если используется GPU
+   - `[array_backend] CPU only: NumPy backend in use` — если GPU не используется
+
+4. Если возникают ошибки — проверьте переменные среды CUDA, версию драйвера и совместимость CuPy с вашей CUDA.
+
+### Примечание
+- Если CuPy не установлен или не видит GPU, проект автоматически работает на CPU (NumPy).
+- Для максимальной производительности рекомендуется использовать актуальные драйверы NVIDIA и CUDA Toolkit.
