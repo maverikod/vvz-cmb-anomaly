@@ -1,0 +1,3 @@
+[console_scripts]
+cmb-anomaly = main:main
+convert-fits = convert_fits:main

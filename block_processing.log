@@ -1,0 +1,60 @@
+=== Block 0 ===
+2025-11-08 02:16:15 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:15 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:15 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:15 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 0 complete
+=== Block 1 ===
+2025-11-08 02:16:17 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:17 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:17 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:17 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 1 complete
+=== Block 2 ===
+2025-11-08 02:16:20 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:20 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:20 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:20 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 2 complete
+=== Block 3 ===
+2025-11-08 02:16:23 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:23 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:23 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:23 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 3 complete
+=== Block 4 ===
+2025-11-08 02:16:26 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:26 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:26 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:26 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 4 complete
+=== Block 5 ===
+2025-11-08 02:16:29 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:29 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:29 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:29 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 5 complete
+=== Block 6 ===
+2025-11-08 02:16:32 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:32 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:32 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:32 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 6 complete
+=== Block 7 ===
+2025-11-08 02:16:34 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:34 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:34 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:34 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 7 complete
+=== Block 8 ===
+2025-11-08 02:16:38 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:38 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:38 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:38 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 8 complete
+=== Block 9 ===
+2025-11-08 02:16:41 - INFO - Setting multiprocessing start method to 'spawn' for CUDA compatibility
+2025-11-08 02:16:41 - INFO - Long-wavelength search mode enabled:
+2025-11-08 02:16:41 - INFO -   κ range: [0.010, 0.100] per deg
+2025-11-08 02:16:41 - INFO -   Max radius: 60.0 deg, bin size: 1.0 deg
+Block 9 complete

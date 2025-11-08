@@ -1,0 +1,17 @@
+INFO:root:Loading anomalies from testing/results/02_multiscale/multiscale_results.csv... (по агрегированным кластерам)
+Traceback (most recent call last):
+  File "/home/vasilyvz/Desktop/Инерция/Снова с нуля/prog/cmb-anomaly/main.py", line 237, in <module>
+    main() 
+    ^^^^^^
+  File "/home/vasilyvz/Desktop/Инерция/Снова с нуля/prog/cmb-anomaly/main.py", line 169, in main
+    run_scale_clustering_analysis(
+  File "/home/vasilyvz/Desktop/Инерция/Снова с нуля/prog/cmb-anomaly/cmb_anomaly/scale_clustering.py", line 63, in run_scale_clustering_analysis
+    r0 = np.min(radii)
+         ^^^^^^^^^^^^^
+  File "/home/vasilyvz/Desktop/Инерция/Снова с нуля/prog/cmb-anomaly/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py", line 3302, in min
+    return _wrapreduction(a, np.minimum, 'min', axis, None, out,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vasilyvz/Desktop/Инерция/Снова с нуля/prog/cmb-anomaly/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: zero-size array to reduction operation minimum which has no identity

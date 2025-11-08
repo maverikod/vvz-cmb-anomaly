@@ -1,0 +1,15 @@
+[array_backend] CUDA detected: CuPy backend, 1 GPU(s), first GPU: b'NVIDIA GeForce MX150'
+[STEP] convert: использую кэш cache/cmb_temperature.npy
+[STEP] convert: использую кэш cache/mask_common.npy
+[STEP] convert: использую кэш cache/dust_map.npy
+[STEP] convert: использую кэш cache/hi_map.npy
+[STEP] multiscale: использую кэш results/02_multiscale/results_anomalies_multi.csv
+[STEP] clustering: использую кэш results/03_clustering/unique_clusters.csv
+[STEP] galactic_corr: использую кэш results/04_galactic_corr/galactic_corr_anomalies_1deg.csv
+[STEP] dust_corr: выходной файл results/05_dust_corr/dust_corr_anomalies_halo_1deg.csv отсутствует или повреждён — выполняю шаг
+[STEP] dust_corr: расчёт корреляции с картой пыли
+Loading dust map...
+
+[ОШИБКА] [dust_corr] Файл: results/05_dust_corr/dust_corr_anomalies_halo_1deg.csv
+Не удалось выполнить корреляцию с картой пыли
+Причина: Implicit conversion to a NumPy array is not allowed. Please use `.get()` to construct a NumPy array explicitly.

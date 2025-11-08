@@ -1,0 +1,1908 @@
+classes:
+  cmb_anomaly/structure_detector.py:DetectionResult:
+    bases: []
+    docstring: Single-center structure detection outcome.
+    file: cmb_anomaly/structure_detector.py
+    line: 29
+    methods: []
+    name: DetectionResult
+dependencies: {}
+files: {}
+functions:
+  cmb_anomaly/array_backend.py:array_load:
+    args:
+    - path
+    - allow_pickle
+    docstring: Load .npy file to backend array. Fallback to NumPy if CuPy fails.
+    file: cmb_anomaly/array_backend.py
+    line: 46
+    name: array_load
+  cmb_anomaly/array_backend.py:array_save:
+    args:
+    - path
+    - arr
+    docstring: Save array to .npy file. Fallback to NumPy if CuPy fails.
+    file: cmb_anomaly/array_backend.py
+    line: 56
+    name: array_save
+  cmb_anomaly/array_backend.py:is_cpu_array:
+    args:
+    - arr
+    docstring: Return True if array is a NumPy array (on CPU).
+    file: cmb_anomaly/array_backend.py
+    line: 28
+    name: is_cpu_array
+  cmb_anomaly/array_backend.py:is_gpu_array:
+    args:
+    - arr
+    docstring: Return True if array is a CuPy array (on GPU).
+    file: cmb_anomaly/array_backend.py
+    line: 21
+    name: is_gpu_array
+  cmb_anomaly/array_backend.py:print_backend_info:
+    args: []
+    docstring: Prints info about current array backend and CUDA availability.
+    file: cmb_anomaly/array_backend.py
+    line: 32
+    name: print_backend_info
+  cmb_anomaly/cluster_postprocess.py:aggregate_by_max_s:
+    args:
+    - df
+    - center_columns
+    - s_column
+    docstring: 'Group by center columns, keep row with maximal S in each group.
+
+      Logs the number of unique clusters.'
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 38
+    name: aggregate_by_max_s
+  cmb_anomaly/cluster_postprocess.py:dbscan_clusters:
+    args:
+    - df
+    - center_columns
+    - radius_column
+    - s_column
+    - eps
+    - min_samples
+    docstring: Cluster anomalies using DBSCAN in (l, b, r) space, keep max S in each
+      cluster.
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 52
+    name: dbscan_clusters
+  cmb_anomaly/cluster_postprocess.py:filter_clusters:
+    args:
+    - df
+    - s_column
+    - npix_column
+    - s_threshold
+    - min_npix
+    docstring: Filter clusters by S and npix thresholds.
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 76
+    name: filter_clusters
+  cmb_anomaly/cluster_postprocess.py:filter_unique_clusters:
+    args:
+    - input_csv
+    - output_csv
+    - center_columns
+    - s_column
+    - radius_column
+    - round_decimals
+    - use_dbscan
+    - dbscan_eps
+    - dbscan_min_samples
+    - s_threshold
+    - min_npix
+    - summary_report
+    docstring: "Filter anomalies to keep only one (with maximal S) per unique center\
+      \ or cluster.\nOptionally, cluster close anomalies using DBSCAN.\nOptionally,\
+      \ filter by S and npix.\nLogs statistics at each stage.\nParameters:\n    input_csv\
+      \ (str): Path to input CSV file with raw anomalies.\n    output_csv (str): Path\
+      \ to save filtered unique clusters.\n    center_columns (list, optional): Columns\
+      \ to use as center (default: [\"l_deg\", \"b_deg\"]).\n    s_column (str): Name\
+      \ of the S column (default: \"S\").\n    radius_column (str): Name of the radius\
+      \ column (default: \"radius_deg\").\n    round_decimals (int): Decimals to round\
+      \ coordinates for grouping (default: 4).\n    use_dbscan (bool): If True, use\
+      \ DBSCAN clustering in (l, b, r) space.\n    dbscan_eps (float): DBSCAN epsilon\
+      \ (in degrees).\n    dbscan_min_samples (int): DBSCAN min_samples.\n    s_threshold\
+      \ (float): Minimum S for cluster to be kept.\n    min_npix (int): Minimum npix\
+      \ for cluster to be kept.\n    summary_report (bool): If True, log summary statistics\
+      \ for clusters."
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 87
+    name: filter_unique_clusters
+  cmb_anomaly/cluster_postprocess.py:log_cluster_stats:
+    args:
+    - df
+    - stage
+    docstring: Log statistics (min/mean/max) for S, radius, npix in the DataFrame.
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 21
+    name: log_cluster_stats
+  cmb_anomaly/convert.py:convert_dust_fits_to_npy:
+    args:
+    - fits_path
+    - output_path
+    docstring: "Convert Planck dust map FITS (COMP-MAP, column 'I') to npy array.\n\
+      Args:\n    fits_path (str): Path to dust FITS file.\n    output_path (str):\
+      \ Path to output .npy file."
+    file: cmb_anomaly/convert.py
+    line: 69
+    name: convert_dust_fits_to_npy
+  cmb_anomaly/convert.py:extract_gas_component:
+    args:
+    - fits_path
+    - column
+    docstring: "Извлекает компонент газа (HI, CO и др.) из FITS-файла по имени колонки.\n\
+      Args:\n    fits_path (str): Path to FITS file.\n    column (str): Column name\
+      \ (e.g. 'NHI', 'CO').\nReturns:\n    np.ndarray: 1D array of gas values (float32)."
+    file: cmb_anomaly/convert.py
+    line: 52
+    name: extract_gas_component
+  cmb_anomaly/convert.py:run_convert_command:
+    args:
+    - input_path
+    - output_path
+    docstring: "Универсальная конвертация FITS в NPY для температуры, маски, пыли,\
+      \ HI, CO и др.\nArgs:\n    input_path (str): Path to input FITS file.\n    output_path\
+      \ (str): Path to output .npy file."
+    file: cmb_anomaly/convert.py
+    line: 7
+    name: run_convert_command
+  cmb_anomaly/dust_correlation.py:run_dust_correlation_analysis:
+    args:
+    - anomaly_csv
+    - dust_fits
+    - out_prefix
+    - n_control
+    - seed
+    - min_npix
+    docstring: "Analyze correlation between CMB anomalies and dust map.\nLogs npix,\
+      \ NaN/Inf, out-of-bounds for each region. Filters regions with too few pixels.\n\
+      Args:\n    anomaly_csv (str): CSV with anomalies (l, b, radius_deg, S, zone,\
+      \ ...)\n    dust_fits (str): FITS file with dust map (HEALPix, full sky)\n \
+      \   out_prefix (str): Prefix for output files\n    n_control (int): Number of\
+      \ control (random) samples per zone/scale\n    seed (int): Random seed\n   \
+      \ min_npix (int): Minimum number of pixels in region"
+    file: cmb_anomaly/dust_correlation.py
+    line: 15
+    name: run_dust_correlation_analysis
+  cmb_anomaly/dust_correlation.py:to_py_scalar:
+    args:
+    - x
+    docstring: null
+    file: cmb_anomaly/dust_correlation.py
+    line: 10
+    name: to_py_scalar
+  cmb_anomaly/dust_profile.py:analyze_dust_profile:
+    args:
+    - anomaly_csv
+    - dust_npy
+    - out_dir
+    - zone_col
+    - border_width
+    - r_max
+    - n_bins
+    - n_control
+    - seed
+    - min_npix
+    docstring: 'Основная функция анализа морфологии пыли вокруг CMB-анoмалий.
+
+      Сохраняет профили, статистики, гистограммы, summary в out_dir.
+
+      Все этапы логгируются. Анализ проводится по агрегированным кластерам.'
+    file: cmb_anomaly/dust_profile.py
+    line: 94
+    name: analyze_dust_profile
+  cmb_anomaly/dust_profile.py:dust_stats_for_anomaly:
+    args:
+    - center_l
+    - center_b
+    - radius_deg
+    - dust_map
+    - nside
+    - border_width
+    - min_npix
+    docstring: "Computes dust statistics inside anomaly and in border ring.\nLogs\
+      \ npix, NaN/Inf, out-of-bounds. Filters regions with too few pixels.\nArgs:\n\
+      \    center_l, center_b: anomaly center (deg)\n    radius_deg: anomaly radius\
+      \ (deg)\n    dust_map: HEALPix dust map\n    nside: HEALPix parameter\n    border_width:\
+      \ width of border ring (in radii)\n    min_npix: minimum number of pixels required\
+      \ in region\nReturns:\n    dict with statistics"
+    file: cmb_anomaly/dust_profile.py
+    line: 10
+    name: dust_stats_for_anomaly
+  cmb_anomaly/dust_profile.py:radial_profile:
+    args:
+    - center_l
+    - center_b
+    - radius_deg
+    - dust_map
+    - nside
+    - r_max
+    - n_bins
+    docstring: "Builds radial dust profile from anomaly center to r_max*R.\nLogs npix,\
+      \ NaN/Inf, out-of-bounds for each bin.\nReturns:\n    r_bins (deg), mean_dust\
+      \ (per bin)"
+    file: cmb_anomaly/dust_profile.py
+    line: 64
+    name: radial_profile
+  cmb_anomaly/dust_profile.py:to_py_scalar:
+    args:
+    - x
+    docstring: null
+    file: cmb_anomaly/dust_profile.py
+    line: 235
+    name: to_py_scalar
+  cmb_anomaly/galactic_correlation.py:run_galactic_correlation_analysis:
+    args:
+    - csv_path
+    - radii
+    - out_prefix
+    - top_n
+    docstring: "Analyze correlation of anomaly clusters with Galactic structures.\n\
+      Logs number of objects per zone and radius, checks for NaN/out-of-bounds.\n\
+      Анализ проводится по агрегированным кластерам.\nArgs:\n    csv_path (str): Path\
+      \ to CSV with anomalies (must have 'radius_deg', 'l', 'b')\n    radii (tuple):\
+      \ Radii to analyze (default: 1, 5, 25)\n    out_prefix (str): Prefix for output\
+      \ files\n    top_n (int): Number of top anomalies to plot on map"
+    file: cmb_anomaly/galactic_correlation.py
+    line: 11
+    name: run_galactic_correlation_analysis
+  cmb_anomaly/galactic_correlation.py:to_py_scalar:
+    args:
+    - x
+    docstring: null
+    file: cmb_anomaly/galactic_correlation.py
+    line: 6
+    name: to_py_scalar
+  cmb_anomaly/known_regions.py:load_known_regions_from_yaml:
+    args:
+    - yaml_path
+    docstring: 'Load known anomaly regions from a YAML file.
+
+      Each region should have: l (deg), b (deg), radius_deg, type (str, optional)
+
+      Returns: list of dicts with keys: l, b, radius_deg, type'
+    file: cmb_anomaly/known_regions.py
+    line: 3
+    name: load_known_regions_from_yaml
+  cmb_anomaly/multiscale.py:aggregate_by_max_s:
+    args:
+    - results
+    docstring: "Aggregates regions by center_pix, keeping only the record with max\
+      \ |S| for each.\nLogs the number of unique regions.\nArgs:\n    results (list\
+      \ of dict): List of region dicts.\nReturns:\n    list of dict: Aggregated regions."
+    file: cmb_anomaly/multiscale.py
+    line: 33
+    name: aggregate_by_max_s
+  cmb_anomaly/multiscale.py:filter_small_regions:
+    args:
+    - results
+    - min_npix
+    docstring: "Filter out regions with too few pixels (npix < min_npix).\nLogs the\
+      \ number of filtered and remaining regions.\nArgs:\n    results (list of dict):\
+      \ List of region dicts.\n    min_npix (int): Minimum number of pixels required.\n\
+      Returns:\n    list of dict: Filtered regions."
+    file: cmb_anomaly/multiscale.py
+    line: 16
+    name: filter_small_regions
+  cmb_anomaly/multiscale.py:run_multiscale_anomaly_search:
+    args:
+    - temperature_path
+    - mask_path
+    - results_csv
+    - radii_deg
+    - step_deg
+    - top_n
+    - s_threshold
+    - centers
+    - min_npix
+    docstring: "Run automatic multiscale anomaly search on CMB map with or without\
+      \ mask.\nАнализ масштабов строится по агрегированным кластерам (unique center_pix,\
+      \ max S).\nArgs:\n    temperature_path (str): Path to .npy file with temperature\
+      \ map\n    mask_path (str or None): Path to .npy file with mask, or None/empty\
+      \ for no mask\n    results_csv (str): Path to output CSV file\n    radii_deg\
+      \ (list): List of radii in degrees (default: 1-15)\n    step_deg (int): Step\
+      \ in degrees for grid\n    top_n (int): Number of top anomalies to visualize\n\
+      \    s_threshold (float): Threshold for S to consider anomaly (default: 5.0)\n\
+      \    min_npix (int): Minimum number of pixels in region (default: 100)"
+    file: cmb_anomaly/multiscale.py
+    line: 51
+    name: run_multiscale_anomaly_search
+  cmb_anomaly/multiscale.py:run_multiscale_anomaly_search_dust:
+    args:
+    - dust_path
+    - mask_path
+    - results_csv
+    - radii_deg
+    - step_deg
+    - top_n
+    - centers
+    docstring: "Run automatic multiscale anomaly search on dust map (Planck) with\
+      \ or without mask.\nArgs:\n    dust_path (str): Path to .npy file with dust\
+      \ map\n    mask_path (str or None): Path to .npy file with mask, or None/empty\
+      \ for no mask\n    results_csv (str): Path to output CSV file\n    radii_deg\
+      \ (list): List of radii in degrees (default: 1-15)\n    step_deg (int): Step\
+      \ in degrees for grid\n    top_n (int): Number of top anomalies to visualize"
+    file: cmb_anomaly/multiscale.py
+    line: 238
+    name: run_multiscale_anomaly_search_dust
+  cmb_anomaly/multiscale.py:to_py_scalar:
+    args:
+    - x
+    docstring: Convert cupy/numpy scalars to python float/int for CSV and stdlib compatibility.
+    file: cmb_anomaly/multiscale.py
+    line: 9
+    name: to_py_scalar
+  cmb_anomaly/phase_profile.py:analyze_phase_profile:
+    args:
+    - anomaly_csv
+    - dust_npy
+    - hi_npy
+    - out_dir
+    - co_npy
+    - zone_col
+    - border_width
+    - r_max
+    - n_bins
+    - n_control
+    - seed
+    - min_npix
+    docstring: 'Фазовый морфологический анализ CMB-анoмалий: dust, HI, (CO).
+
+      Сохраняет профили, статистики, гистограммы, корреляции, summary в out_dir.
+
+      Все этапы логгируются. Анализ проводится по агрегированным кластерам.'
+    file: cmb_anomaly/phase_profile.py
+    line: 81
+    name: analyze_phase_profile
+  cmb_anomaly/phase_profile.py:extract_profile:
+    args:
+    - center_l
+    - center_b
+    - radius_deg
+    - map_arr
+    - nside
+    - r_max
+    - n_bins
+    docstring: 'Extracts radial profile for a given center and radius on a HEALPix
+      map.
+
+      Logs npix, NaN/Inf, out-of-bounds for each bin.'
+    file: cmb_anomaly/phase_profile.py
+    line: 10
+    name: extract_profile
+  cmb_anomaly/phase_profile.py:extract_stats:
+    args:
+    - center_l
+    - center_b
+    - radius_deg
+    - map_arr
+    - nside
+    - border_width
+    - min_npix
+    docstring: 'Extracts statistics for anomaly region and border. Logs npix, NaN/Inf,
+      out-of-bounds.
+
+      Filters regions with too few pixels.'
+    file: cmb_anomaly/phase_profile.py
+    line: 39
+    name: extract_stats
+  cmb_anomaly/phase_profile.py:to_py_scalar:
+    args:
+    - x
+    docstring: null
+    file: cmb_anomaly/phase_profile.py
+    line: 253
+    name: to_py_scalar
+  cmb_anomaly/region_match.py:angular_distance_deg:
+    args:
+    - l1
+    - b1
+    - l2
+    - b2
+    docstring: Вычисляет угловое расстояние (deg) между (l1, b1) и массивами (l2,
+      b2) на сфере.
+    file: cmb_anomaly/region_match.py
+    line: 62
+    name: angular_distance_deg
+  cmb_anomaly/region_match.py:compare_anomaly_catalogs:
+    args:
+    - csv1
+    - csv2
+    - output_csv
+    - max_dist_deg
+    - radius_tol
+    - top_n
+    - unique_region
+    - summary_report
+    docstring: 'Сравнивает два каталога аномалий (например, CMB и dust) и ищет совпадающие
+      регионы.
+
+      Совпадение: угловое расстояние < max_dist_deg и относительная разница радиусов
+      < radius_tol.
+
+      Для каждого региона из csv1 ищет top-N ближайших из csv2.
+
+      unique_region: если True, не повторяет совпадения по одному региону.
+
+      Сохраняет результат в output_csv (если задан).
+
+      Возвращает DataFrame с совпадениями.'
+    file: cmb_anomaly/region_match.py
+    line: 75
+    name: compare_anomaly_catalogs
+  cmb_anomaly/region_match.py:filter_and_sort_matches:
+    args:
+    - df_sub
+    - l0
+    - b0
+    - r0
+    - radius_tol
+    - top_n
+    - unique_region
+    - used_indices
+    docstring: 'Фильтрует и сортирует совпадения по угловому расстоянию и относительной
+      разнице радиусов.
+
+      Если unique_region=True, не повторяет совпадения по одному региону.
+
+      used_indices: set индексов уже сопоставленных аномалий.'
+    file: cmb_anomaly/region_match.py
+    line: 7
+    name: filter_and_sort_matches
+  cmb_anomaly/region_match.py:find_similar_regions:
+    args:
+    - anomaly_csv
+    - known_yaml
+    - output_csv
+    - radius_tol
+    - type_key
+    - top_n
+    - unique_region
+    - summary_report
+    docstring: 'Для каждого известного региона из yaml ищет top-N наиболее похожих
+      регионов среди найденных аномалий (по координатам и радиусу).
+
+      Похожесть определяется по расстоянию на сфере и относительной разнице радиусов.
+
+      Если указан type, ищет только среди совпадающих типов (если есть).
+
+      unique_region: если True, не повторяет совпадения по одному и тому же региону
+      аномалий.
+
+      Сохраняет результат в output_csv (если задан).
+
+      Возвращает DataFrame с результатами.'
+    file: cmb_anomaly/region_match.py
+    line: 21
+    name: find_similar_regions
+  cmb_anomaly/region_match.py:log_match_summary:
+    args:
+    - df
+    - stage
+    docstring: 'Логгирует summary-отчёт по совпадениям: число совпадений, min/mean/max
+      по расстояниям, радиусам, типам.'
+    file: cmb_anomaly/region_match.py
+    line: 118
+    name: log_match_summary
+  cmb_anomaly/scale_clustering.py:log_log_fit:
+    args:
+    - r_centers
+    - counts
+    docstring: Perform linear fit in log-log space, return fit line and stats.
+    file: cmb_anomaly/scale_clustering.py
+    line: 29
+    name: log_log_fit
+  cmb_anomaly/scale_clustering.py:plot_histogram:
+    args:
+    - r_centers
+    - counts
+    - fname
+    - alpha
+    - r0
+    - title
+    - min_count
+    - loglog_fit
+    docstring: 'Plot and save histogram of anomaly counts vs. radius.
+
+      Optionally overlays log-log fit line.'
+    file: cmb_anomaly/scale_clustering.py
+    line: 8
+    name: plot_histogram
+  cmb_anomaly/scale_clustering.py:run_scale_clustering_analysis:
+    args:
+    - csv_path
+    - alpha
+    - r0
+    - plot
+    - top_n
+    - min_count
+    - summary_report
+    docstring: "Analyze clustering of anomaly radii by discrete theoretical levels\
+      \ (по агрегированным кластерам!).\nArgs:\n    csv_path (str): Path to CSV with\
+      \ anomalies (must have 'radius_deg')\n    alpha (float): Logarithmic step (default\
+      \ 0.7)\n    r0 (float): Minimal radius (default: min(radius_deg) in file)\n\
+      \    plot (bool): Whether to plot histogram and save\n    top_n (int): Number\
+      \ of top levels to print\n    min_count (int): Minimal number of anomalies per\
+      \ radius to include in fit/plot\n    summary_report (bool): If True, log summary\
+      \ statistics"
+    file: cmb_anomaly/scale_clustering.py
+    line: 44
+    name: run_scale_clustering_analysis
+  cmb_anomaly/structure_detector.py:_process_center_block:
+    args:
+    - center_block
+    - temperature
+    - mask
+    - nside
+    - max_radius_deg
+    - bin_size_deg
+    - kappa_grid
+    - min_bins
+    - power_weight_p
+    - p_value_threshold
+    - use_gpu
+    docstring: "Process a block of centers in parallel. This function is called by\
+      \ worker processes.\nCan use GPU if available and use_gpu=True.\n\nArgs:\n \
+      \   center_block: List of center pixel indices to process.\n    temperature:\
+      \ Full-sky temperature map (can be GPU or CPU array).\n    mask: Optional mask\
+      \ (can be GPU or CPU array).\n    nside: HEALPix NSIDE.\n    max_radius_deg:\
+      \ Max radius for radial profile.\n    bin_size_deg: Bin size for radial profile.\n\
+      \    kappa_grid: Grid of κ values to test.\n    min_bins: Minimum number of\
+      \ bins required.\n    power_weight_p: Power-law weighting exponent.\n    p_value_threshold:\
+      \ P-value threshold for reporting.\n    use_gpu: Whether to use GPU for computations.\n\
+      \nReturns:\n    List of DetectionResult for significant detections in this block."
+    file: cmb_anomaly/structure_detector.py
+    line: 232
+    name: _process_center_block
+  cmb_anomaly/structure_detector.py:compute_radial_profile:
+    args:
+    - values
+    - nside
+    - center_pix
+    - max_radius_deg
+    - bin_size_deg
+    - valid_mask
+    - use_gpu
+    docstring: "Compute radial mean profile T̄(r) around a center using concentric\
+      \ annuli.\n\nArgs:\n    values: Full-sky scalar map (HEALPix ring ordering).\n\
+      \    nside: HEALPix NSIDE.\n    center_pix: Center pixel (int).\n    max_radius_deg:\
+      \ Max radius in degrees.\n    bin_size_deg: Angular bin size in degrees.\n \
+      \   valid_mask: Optional boolean mask of valid pixels; if provided, masked\n\
+      \        pixels are excluded from annuli statistics.\n\nReturns:\n    r_centers_deg:\
+      \ 1D array of radial bin centers (deg).\n    mean_profile: 1D array of mean\
+      \ values in annuli.\n    counts: 1D array of pixel counts per annulus."
+    file: cmb_anomaly/structure_detector.py
+    line: 45
+    name: compute_radial_profile
+  cmb_anomaly/structure_detector.py:match_oscillatory_template:
+    args:
+    - r_deg
+    - m_profile
+    - counts
+    - kappa_grid_per_deg
+    - min_bins
+    - power_weight_p
+    - use_gpu
+    docstring: "Match detrended mean profile to cos(κ r + φ) over a grid of κ and\
+      \ return\nthe best-fit κ, amplitude, correlation, and p-value.\n\nVectorized\
+      \ version: evaluates all kappa values simultaneously.\n\nArgs:\n    r_deg: Radii\
+      \ (deg).\n    m_profile: Mean profile values per radius.\n    counts: Pixel\
+      \ counts per radius bin.\n    kappa_grid_per_deg: Grid of κ in 1/deg.\n    min_bins:\
+      \ Minimal number of valid bins required.\n    power_weight_p: If provided, weight\
+      \ profile by 1 / r^p (algebraic).\n\nReturns:\n    best_kappa, best_amplitude,\
+      \ best_correlation, p_value, used_bins"
+    file: cmb_anomaly/structure_detector.py
+    line: 127
+    name: match_oscillatory_template
+  cmb_anomaly/structure_detector.py:run_structure_detection:
+    args:
+    - temperature
+    - mask
+    - step_deg
+    - max_radius_deg
+    - bin_size_deg
+    - min_bins
+    - kappa_min_per_deg
+    - kappa_max_per_deg
+    - kappa_num
+    - power_weight_p
+    - p_value_threshold
+    - n_jobs
+    - block_size
+    - use_gpu
+    docstring: "Detect ring-like oscillatory structures over a sky grid.\n\nArgs:\n\
+      \    temperature: Full-sky CMB temperature map (HEALPix ring).\n    mask: Optional\
+      \ boolean mask of valid pixels (same shape as map).\n    step_deg: Approximate\
+      \ step for center grid generation.\n    max_radius_deg: Max radius for radial\
+      \ profile (deg).\n    bin_size_deg: Angular bin width (deg).\n    min_bins:\
+      \ Minimal number of valid annuli for detection.\n    kappa_min_per_deg: Minimal\
+      \ κ (1/deg) to scan.\n    kappa_max_per_deg: Max κ (1/deg) to scan.\n    kappa_num:\
+      \ Number of κ grid points.\n    power_weight_p: Optional algebraic weighting\
+      \ 1/r^p; None to disable.\n    p_value_threshold: Significance threshold for\
+      \ reporting.\n\nReturns:\n    List of DetectionResult for significant detections."
+    file: cmb_anomaly/structure_detector.py
+    line: 351
+    name: run_structure_detection
+  cmb_anomaly/structure_detector.py:run_structure_detection_from_paths:
+    args:
+    - temperature_path
+    - mask_path
+    - results_csv_path
+    - step_deg
+    - max_radius_deg
+    - bin_size_deg
+    - p_value_threshold
+    - n_jobs
+    - block_size
+    - use_gpu
+    docstring: 'Convenience wrapper: load arrays and write detections to CSV.'
+    file: cmb_anomaly/structure_detector.py
+    line: 623
+    name: run_structure_detection_from_paths
+  cmb_anomaly/utils.py:check_maps_compatibility:
+    args:
+    - arr1
+    - arr2
+    - name1
+    - name2
+    docstring: "Check that two arrays have the same shape and compatible dtype.\n\
+      Args:\n    arr1 (np.ndarray): First array.\n    arr2 (np.ndarray): Second array.\n\
+      \    name1 (str): Name for logging.\n    name2 (str): Name for logging.\nRaises:\n\
+      \    ValueError: If shapes or dtypes are not compatible."
+    file: cmb_anomaly/utils.py
+    line: 154
+    name: check_maps_compatibility
+  cmb_anomaly/utils.py:check_shape_dtype:
+    args:
+    - arr
+    - expected_shape
+    - expected_dtype
+    - name
+    docstring: "Check array shape and dtype, raise ValueError if mismatch.\nArgs:\n\
+      \    arr (np.ndarray): Array to check.\n    expected_shape (tuple): Expected\
+      \ shape.\n    expected_dtype (type): Expected dtype.\n    name (str): Name for\
+      \ logging."
+    file: cmb_anomaly/utils.py
+    line: 25
+    name: check_shape_dtype
+  cmb_anomaly/utils.py:ensure_dir_for_file:
+    args:
+    - filepath
+    docstring: Create directory for file if it does not exist.
+    file: cmb_anomaly/utils.py
+    line: 130
+    name: ensure_dir_for_file
+  cmb_anomaly/utils.py:extract_mask_component:
+    args:
+    - fits_path
+    - expected_shape
+    docstring: "Extract binary mask from a Planck FITS mask file.\nChecks shape, dtype,\
+      \ logs stats, and filters invalid values (keeps shape).\nArgs:\n    fits_path\
+      \ (str): Path to the input FITS file.\n    expected_shape (tuple, optional):\
+      \ Expected shape for validation.\nReturns:\n    np.ndarray: 1D boolean array\
+      \ (True=use, False=masked)\nRaises:\n    ValueError: If mask shape is empty\
+      \ or contains only invalid values."
+    file: cmb_anomaly/utils.py
+    line: 96
+    name: extract_mask_component
+  cmb_anomaly/utils.py:extract_temperature_component:
+    args:
+    - fits_path
+    - expected_shape
+    docstring: "Extract the temperature (I) component from a Planck SMICA FITS file,\n\
+      or the dust intensity (I) from a Planck dust map FITS file.\nTries 'I_STOKES'\
+      \ (CMB), then 'I' (dust), then first row if 2D.\nChecks shape, dtype, logs stats,\
+      \ and filters invalid values (keeps shape).\nArgs:\n    fits_path (str): Path\
+      \ to the input FITS file.\n    expected_shape (tuple, optional): Expected shape\
+      \ for validation.\nReturns:\n    np.ndarray: 1D array of temperature or dust\
+      \ values (float32).\nRaises:\n    ValueError: If no valid temperature/dust column\
+      \ is found or array is empty."
+    file: cmb_anomaly/utils.py
+    line: 59
+    name: extract_temperature_component
+  cmb_anomaly/utils.py:filter_invalid:
+    args:
+    - arr
+    - name
+    docstring: "Replace NaN/Inf with zero, log percent of invalid values.\nArgs:\n\
+      \    arr (np.ndarray): Input array.\n    name (str): Name for logging.\nReturns:\n\
+      \    np.ndarray: Array with NaN/Inf replaced by zero."
+    file: cmb_anomaly/utils.py
+    line: 42
+    name: filter_invalid
+  cmb_anomaly/utils.py:get_centers:
+    args:
+    - nside
+    - step_deg
+    docstring: "Generate HEALPix pixel indices for centers with given step in degrees.\n\
+      Args:\n    nside (int): HEALPix NSIDE\n    step_deg (int): step in degrees\n\
+      Returns:\n    np.ndarray: array of pixel indices"
+    file: cmb_anomaly/utils.py
+    line: 137
+    name: get_centers
+  cmb_anomaly/utils.py:log_array_stats:
+    args:
+    - name
+    - arr
+    docstring: "Log shape, dtype, percent of valid, NaN, and Inf values for the array.\n\
+      Args:\n    name (str): Name for logging.\n    arr (np.ndarray): Array to analyze."
+    file: cmb_anomaly/utils.py
+    line: 8
+    name: log_array_stats
+  main.py:get_path:
+    args:
+    - arg_value
+    - config_value
+    - default_value
+    docstring: null
+    file: main.py
+    line: 73
+    name: get_path
+  main.py:load_config:
+    args:
+    - args
+    docstring: "Load configuration from file specified by --config/-c or environment\
+      \ variable CMB_ANOMALY_CONF.\nArgs:\n    args: argparse.Namespace with parsed\
+      \ arguments\nReturns:\n    dict: loaded config\nRaises:\n    FileNotFoundError:\
+      \ if config file is not found\n    json.JSONDecodeError: if config is not valid\
+      \ JSON"
+    file: main.py
+    line: 43
+    name: load_config
+  main.py:main:
+    args: []
+    docstring: null
+    file: main.py
+    line: 82
+    name: main
+  run_pipeline.py:clear_all:
+    args: []
+    docstring: 'Полная очистка: удаляет все файлы данных из cache/ и results/*, кроме
+      документации.'
+    file: run_pipeline.py
+    line: 88
+    name: clear_all
+  run_pipeline.py:clear_cache:
+    args: []
+    docstring: Удаляет все файлы из каталога cache/ (кроме .gitkeep и подкаталогов).
+    file: run_pipeline.py
+    line: 57
+    name: clear_cache
+  run_pipeline.py:clear_results:
+    args: []
+    docstring: Удаляет все файлы данных из results/*, кроме документации (README.md,
+      *.md, *.txt).
+    file: run_pipeline.py
+    line: 71
+    name: clear_results
+  run_pipeline.py:downgrade_to_nside:
+    args:
+    - path_in
+    - nside_target
+    - path_out
+    - is_mask
+    docstring: null
+    file: run_pipeline.py
+    line: 118
+    name: downgrade_to_nside
+  run_pipeline.py:ensure_npy:
+    args:
+    - path_fits
+    - path_npy
+    - column
+    docstring: null
+    file: run_pipeline.py
+    line: 110
+    name: ensure_npy
+  run_pipeline.py:ensure_step_outputs:
+    args:
+    - step
+    - call_stack
+    - use_mask
+    - s_threshold
+    - step_deg
+    - top_n
+    - radii_deg
+    - centers
+    docstring: null
+    file: run_pipeline.py
+    line: 227
+    name: ensure_step_outputs
+  run_pipeline.py:fail:
+    args:
+    - msg
+    - step
+    - file
+    - exc
+    docstring: null
+    file: run_pipeline.py
+    line: 158
+    name: fail
+  run_pipeline.py:get_nside_from_fits:
+    args:
+    - path
+    - column
+    docstring: null
+    file: run_pipeline.py
+    line: 99
+    name: get_nside_from_fits
+  run_pipeline.py:get_nside_from_npy:
+    args:
+    - path
+    docstring: null
+    file: run_pipeline.py
+    line: 93
+    name: get_nside_from_npy
+  run_pipeline.py:get_param:
+    args:
+    - name
+    - default
+    - cast
+    docstring: null
+    file: run_pipeline.py
+    line: 460
+    name: get_param
+  run_pipeline.py:is_file_valid:
+    args:
+    - path
+    - filetype
+    docstring: 'Проверяет существование и читаемость файла.
+
+      filetype: ''npy'', ''csv'', ''fits'' или None (определяется по расширению)
+
+      Возвращает True, если файл валиден, иначе False.'
+    file: run_pipeline.py
+    line: 126
+    name: is_file_valid
+  run_pipeline.py:load_config:
+    args:
+    - config_path
+    docstring: null
+    file: run_pipeline.py
+    line: 174
+    name: load_config
+  run_pipeline.py:main:
+    args: []
+    docstring: null
+    file: run_pipeline.py
+    line: 385
+    name: main
+  run_pipeline.py:print_step_indicator:
+    args:
+    - step
+    - action
+    docstring: null
+    file: run_pipeline.py
+    line: 222
+    name: print_step_indicator
+  run_pipeline.py:resolve_path:
+    args:
+    - path
+    - data_dir
+    docstring: null
+    file: run_pipeline.py
+    line: 182
+    name: resolve_path
+  run_pipeline.py:run_step:
+    args:
+    - step
+    - use_mask
+    - s_threshold
+    - step_deg
+    - top_n
+    - radii_deg
+    - centers
+    docstring: null
+    file: run_pipeline.py
+    line: 250
+    name: run_step
+  run_pipeline.py:safe_remove:
+    args:
+    - path
+    docstring: Удаляет файл, если он существует.
+    file: run_pipeline.py
+    line: 165
+    name: safe_remove
+imports:
+  analyze_cmb.py:array_load:
+    file: analyze_cmb.py
+    line: 4
+    module: cmb_anomaly.array_backend
+    name: array_load
+    type: import_from
+  analyze_cmb.py:array_save:
+    file: analyze_cmb.py
+    line: 4
+    module: cmb_anomaly.array_backend
+    name: array_save
+    type: import_from
+  analyze_cmb.py:cp:
+    file: analyze_cmb.py
+    line: 4
+    module: cmb_anomaly.array_backend
+    name: cp
+    type: import_from
+  analyze_cmb.py:csv:
+    file: analyze_cmb.py
+    line: 3
+    name: csv
+    type: import
+  analyze_cmb.py:healpy:
+    file: analyze_cmb.py
+    line: 2
+    name: healpy
+    type: import
+  analyze_cmb.py:matplotlib.pyplot:
+    file: analyze_cmb.py
+    line: 1
+    name: matplotlib.pyplot
+    type: import
+  analyze_cmb.py:np:
+    file: analyze_cmb.py
+    line: 4
+    module: cmb_anomaly.array_backend
+    name: np
+    type: import_from
+  analyze_cmb.py:print_backend_info:
+    file: analyze_cmb.py
+    line: 4
+    module: cmb_anomaly.array_backend
+    name: print_backend_info
+    type: import_from
+  cmb_anomaly/__init__.py:array_load:
+    file: cmb_anomaly/__init__.py
+    line: 1
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/__init__.py:array_save:
+    file: cmb_anomaly/__init__.py
+    line: 1
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/__init__.py:cp:
+    file: cmb_anomaly/__init__.py
+    line: 1
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/__init__.py:np:
+    file: cmb_anomaly/__init__.py
+    line: 1
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/array_backend.py:cupy:
+    file: cmb_anomaly/array_backend.py
+    line: 24
+    name: cupy
+    type: import
+  cmb_anomaly/array_backend.py:numpy:
+    file: cmb_anomaly/array_backend.py
+    line: 16
+    name: numpy
+    type: import
+  cmb_anomaly/cluster_postprocess.py:DBSCAN:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 57
+    module: sklearn.cluster
+    name: DBSCAN
+    type: import_from
+  cmb_anomaly/cluster_postprocess.py:List:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 15
+    module: typing
+    name: List
+    type: import_from
+  cmb_anomaly/cluster_postprocess.py:Optional:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 15
+    module: typing
+    name: Optional
+    type: import_from
+  cmb_anomaly/cluster_postprocess.py:argparse:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 14
+    name: argparse
+    type: import
+  cmb_anomaly/cluster_postprocess.py:ensure_dir_for_file:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 17
+    module: utils
+    name: ensure_dir_for_file
+    type: import_from
+  cmb_anomaly/cluster_postprocess.py:logging:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 16
+    name: logging
+    type: import
+  cmb_anomaly/cluster_postprocess.py:numpy:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 18
+    name: numpy
+    type: import
+  cmb_anomaly/cluster_postprocess.py:pandas:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 13
+    name: pandas
+    type: import
+  cmb_anomaly/cluster_postprocess.py:tqdm:
+    file: cmb_anomaly/cluster_postprocess.py
+    line: 147
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/convert.py:argparse:
+    file: cmb_anomaly/convert.py
+    line: 83
+    name: argparse
+    type: import
+  cmb_anomaly/convert.py:array_load:
+    file: cmb_anomaly/convert.py
+    line: 3
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/convert.py:array_save:
+    file: cmb_anomaly/convert.py
+    line: 3
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/convert.py:astropy.io.fits:
+    file: cmb_anomaly/convert.py
+    line: 14
+    name: astropy.io.fits
+    type: import
+  cmb_anomaly/convert.py:cp:
+    file: cmb_anomaly/convert.py
+    line: 3
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/convert.py:extract_mask_component:
+    file: cmb_anomaly/convert.py
+    line: 4
+    module: utils
+    name: extract_mask_component
+    type: import_from
+  cmb_anomaly/convert.py:extract_temperature_component:
+    file: cmb_anomaly/convert.py
+    line: 4
+    module: utils
+    name: extract_temperature_component
+    type: import_from
+  cmb_anomaly/convert.py:np:
+    file: cmb_anomaly/convert.py
+    line: 3
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/convert.py:os:
+    file: cmb_anomaly/convert.py
+    line: 1
+    name: os
+    type: import
+  cmb_anomaly/convert.py:tqdm:
+    file: cmb_anomaly/convert.py
+    line: 109
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/dust_correlation.py:array_load:
+    file: cmb_anomaly/dust_correlation.py
+    line: 8
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/dust_correlation.py:array_save:
+    file: cmb_anomaly/dust_correlation.py
+    line: 8
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/dust_correlation.py:cp:
+    file: cmb_anomaly/dust_correlation.py
+    line: 8
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/dust_correlation.py:cupy:
+    file: cmb_anomaly/dust_correlation.py
+    line: 42
+    name: cupy
+    type: import
+  cmb_anomaly/dust_correlation.py:fits:
+    file: cmb_anomaly/dust_correlation.py
+    line: 4
+    module: astropy.io
+    name: fits
+    type: import_from
+  cmb_anomaly/dust_correlation.py:healpy:
+    file: cmb_anomaly/dust_correlation.py
+    line: 2
+    name: healpy
+    type: import
+  cmb_anomaly/dust_correlation.py:logging:
+    file: cmb_anomaly/dust_correlation.py
+    line: 6
+    name: logging
+    type: import
+  cmb_anomaly/dust_correlation.py:mannwhitneyu:
+    file: cmb_anomaly/dust_correlation.py
+    line: 5
+    module: scipy.stats
+    name: mannwhitneyu
+    type: import_from
+  cmb_anomaly/dust_correlation.py:matplotlib.pyplot:
+    file: cmb_anomaly/dust_correlation.py
+    line: 3
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/dust_correlation.py:np:
+    file: cmb_anomaly/dust_correlation.py
+    line: 8
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/dust_correlation.py:numpy:
+    file: cmb_anomaly/dust_correlation.py
+    line: 7
+    name: numpy
+    type: import
+  cmb_anomaly/dust_correlation.py:pandas:
+    file: cmb_anomaly/dust_correlation.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/dust_profile.py:Dict:
+    file: cmb_anomaly/dust_profile.py
+    line: 4
+    module: typing
+    name: Dict
+    type: import_from
+  cmb_anomaly/dust_profile.py:List:
+    file: cmb_anomaly/dust_profile.py
+    line: 4
+    module: typing
+    name: List
+    type: import_from
+  cmb_anomaly/dust_profile.py:Tuple:
+    file: cmb_anomaly/dust_profile.py
+    line: 4
+    module: typing
+    name: Tuple
+    type: import_from
+  cmb_anomaly/dust_profile.py:array_load:
+    file: cmb_anomaly/dust_profile.py
+    line: 8
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/dust_profile.py:array_save:
+    file: cmb_anomaly/dust_profile.py
+    line: 8
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/dust_profile.py:cp:
+    file: cmb_anomaly/dust_profile.py
+    line: 8
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/dust_profile.py:healpy:
+    file: cmb_anomaly/dust_profile.py
+    line: 2
+    name: healpy
+    type: import
+  cmb_anomaly/dust_profile.py:logging:
+    file: cmb_anomaly/dust_profile.py
+    line: 6
+    name: logging
+    type: import
+  cmb_anomaly/dust_profile.py:matplotlib.pyplot:
+    file: cmb_anomaly/dust_profile.py
+    line: 3
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/dust_profile.py:np:
+    file: cmb_anomaly/dust_profile.py
+    line: 8
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/dust_profile.py:os:
+    file: cmb_anomaly/dust_profile.py
+    line: 5
+    name: os
+    type: import
+  cmb_anomaly/dust_profile.py:pandas:
+    file: cmb_anomaly/dust_profile.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/dust_profile.py:tqdm:
+    file: cmb_anomaly/dust_profile.py
+    line: 7
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/galactic_correlation.py:array_load:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 4
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/galactic_correlation.py:array_save:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 4
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/galactic_correlation.py:cp:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 4
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/galactic_correlation.py:logging:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 3
+    name: logging
+    type: import
+  cmb_anomaly/galactic_correlation.py:matplotlib.pyplot:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 2
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/galactic_correlation.py:np:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 4
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/galactic_correlation.py:pandas:
+    file: cmb_anomaly/galactic_correlation.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/known_regions.py:yaml:
+    file: cmb_anomaly/known_regions.py
+    line: 1
+    name: yaml
+    type: import
+  cmb_anomaly/multiscale.py:array_load:
+    file: cmb_anomaly/multiscale.py
+    line: 5
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/multiscale.py:array_save:
+    file: cmb_anomaly/multiscale.py
+    line: 5
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/multiscale.py:cp:
+    file: cmb_anomaly/multiscale.py
+    line: 5
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/multiscale.py:csv:
+    file: cmb_anomaly/multiscale.py
+    line: 2
+    name: csv
+    type: import
+  cmb_anomaly/multiscale.py:ensure_dir_for_file:
+    file: cmb_anomaly/multiscale.py
+    line: 4
+    module: utils
+    name: ensure_dir_for_file
+    type: import_from
+  cmb_anomaly/multiscale.py:get_centers:
+    file: cmb_anomaly/multiscale.py
+    line: 4
+    module: utils
+    name: get_centers
+    type: import_from
+  cmb_anomaly/multiscale.py:healpy:
+    file: cmb_anomaly/multiscale.py
+    line: 1
+    name: healpy
+    type: import
+  cmb_anomaly/multiscale.py:log_array_stats:
+    file: cmb_anomaly/multiscale.py
+    line: 4
+    module: utils
+    name: log_array_stats
+    type: import_from
+  cmb_anomaly/multiscale.py:logging:
+    file: cmb_anomaly/multiscale.py
+    line: 6
+    name: logging
+    type: import
+  cmb_anomaly/multiscale.py:matplotlib.pyplot:
+    file: cmb_anomaly/multiscale.py
+    line: 3
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/multiscale.py:np:
+    file: cmb_anomaly/multiscale.py
+    line: 5
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/multiscale.py:numpy:
+    file: cmb_anomaly/multiscale.py
+    line: 7
+    name: numpy
+    type: import
+  cmb_anomaly/multiscale.py:tqdm:
+    file: cmb_anomaly/multiscale.py
+    line: 277
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/phase_profile.py:Dict:
+    file: cmb_anomaly/phase_profile.py
+    line: 6
+    module: typing
+    name: Dict
+    type: import_from
+  cmb_anomaly/phase_profile.py:List:
+    file: cmb_anomaly/phase_profile.py
+    line: 6
+    module: typing
+    name: List
+    type: import_from
+  cmb_anomaly/phase_profile.py:Tuple:
+    file: cmb_anomaly/phase_profile.py
+    line: 6
+    module: typing
+    name: Tuple
+    type: import_from
+  cmb_anomaly/phase_profile.py:array_load:
+    file: cmb_anomaly/phase_profile.py
+    line: 8
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/phase_profile.py:array_save:
+    file: cmb_anomaly/phase_profile.py
+    line: 8
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/phase_profile.py:cp:
+    file: cmb_anomaly/phase_profile.py
+    line: 8
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/phase_profile.py:healpy:
+    file: cmb_anomaly/phase_profile.py
+    line: 2
+    name: healpy
+    type: import
+  cmb_anomaly/phase_profile.py:logging:
+    file: cmb_anomaly/phase_profile.py
+    line: 5
+    name: logging
+    type: import
+  cmb_anomaly/phase_profile.py:matplotlib.pyplot:
+    file: cmb_anomaly/phase_profile.py
+    line: 3
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/phase_profile.py:np:
+    file: cmb_anomaly/phase_profile.py
+    line: 8
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/phase_profile.py:os:
+    file: cmb_anomaly/phase_profile.py
+    line: 4
+    name: os
+    type: import
+  cmb_anomaly/phase_profile.py:pandas:
+    file: cmb_anomaly/phase_profile.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/phase_profile.py:tqdm:
+    file: cmb_anomaly/phase_profile.py
+    line: 7
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/region_match.py:array_load:
+    file: cmb_anomaly/region_match.py
+    line: 5
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/region_match.py:array_save:
+    file: cmb_anomaly/region_match.py
+    line: 5
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/region_match.py:cp:
+    file: cmb_anomaly/region_match.py
+    line: 5
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/region_match.py:load_known_regions_from_yaml:
+    file: cmb_anomaly/region_match.py
+    line: 4
+    module: known_regions
+    name: load_known_regions_from_yaml
+    type: import_from
+  cmb_anomaly/region_match.py:logging:
+    file: cmb_anomaly/region_match.py
+    line: 3
+    name: logging
+    type: import
+  cmb_anomaly/region_match.py:np:
+    file: cmb_anomaly/region_match.py
+    line: 5
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/region_match.py:numpy:
+    file: cmb_anomaly/region_match.py
+    line: 2
+    name: numpy
+    type: import
+  cmb_anomaly/region_match.py:pandas:
+    file: cmb_anomaly/region_match.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/scale_clustering.py:array_load:
+    file: cmb_anomaly/scale_clustering.py
+    line: 3
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/scale_clustering.py:array_save:
+    file: cmb_anomaly/scale_clustering.py
+    line: 3
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/scale_clustering.py:cp:
+    file: cmb_anomaly/scale_clustering.py
+    line: 3
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/scale_clustering.py:ensure_dir_for_file:
+    file: cmb_anomaly/scale_clustering.py
+    line: 5
+    module: utils
+    name: ensure_dir_for_file
+    type: import_from
+  cmb_anomaly/scale_clustering.py:linregress:
+    file: cmb_anomaly/scale_clustering.py
+    line: 6
+    module: scipy.stats
+    name: linregress
+    type: import_from
+  cmb_anomaly/scale_clustering.py:logging:
+    file: cmb_anomaly/scale_clustering.py
+    line: 4
+    name: logging
+    type: import
+  cmb_anomaly/scale_clustering.py:matplotlib.pyplot:
+    file: cmb_anomaly/scale_clustering.py
+    line: 2
+    name: matplotlib.pyplot
+    type: import
+  cmb_anomaly/scale_clustering.py:np:
+    file: cmb_anomaly/scale_clustering.py
+    line: 3
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/scale_clustering.py:pandas:
+    file: cmb_anomaly/scale_clustering.py
+    line: 1
+    name: pandas
+    type: import
+  cmb_anomaly/structure_detector.py:List:
+    file: cmb_anomaly/structure_detector.py
+    line: 18
+    module: typing
+    name: List
+    type: import_from
+  cmb_anomaly/structure_detector.py:Optional:
+    file: cmb_anomaly/structure_detector.py
+    line: 18
+    module: typing
+    name: Optional
+    type: import_from
+  cmb_anomaly/structure_detector.py:Tuple:
+    file: cmb_anomaly/structure_detector.py
+    line: 18
+    module: typing
+    name: Tuple
+    type: import_from
+  cmb_anomaly/structure_detector.py:annotations:
+    file: cmb_anomaly/structure_detector.py
+    line: 12
+    module: __future__
+    name: annotations
+    type: import_from
+  cmb_anomaly/structure_detector.py:array_load:
+    file: cmb_anomaly/structure_detector.py
+    line: 638
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/structure_detector.py:cp:
+    file: cmb_anomaly/structure_detector.py
+    line: 24
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/structure_detector.py:csv:
+    file: cmb_anomaly/structure_detector.py
+    line: 639
+    name: csv
+    type: import
+  cmb_anomaly/structure_detector.py:dataclass:
+    file: cmb_anomaly/structure_detector.py
+    line: 16
+    module: dataclasses
+    name: dataclass
+    type: import_from
+  cmb_anomaly/structure_detector.py:ensure_dir_for_file:
+    file: cmb_anomaly/structure_detector.py
+    line: 25
+    module: utils
+    name: ensure_dir_for_file
+    type: import_from
+  cmb_anomaly/structure_detector.py:get_centers:
+    file: cmb_anomaly/structure_detector.py
+    line: 25
+    module: utils
+    name: get_centers
+    type: import_from
+  cmb_anomaly/structure_detector.py:healpy:
+    file: cmb_anomaly/structure_detector.py
+    line: 20
+    name: healpy
+    type: import
+  cmb_anomaly/structure_detector.py:is_gpu_array:
+    file: cmb_anomaly/structure_detector.py
+    line: 24
+    module: array_backend
+    name: is_gpu_array
+    type: import_from
+  cmb_anomaly/structure_detector.py:log_array_stats:
+    file: cmb_anomaly/structure_detector.py
+    line: 25
+    module: utils
+    name: log_array_stats
+    type: import_from
+  cmb_anomaly/structure_detector.py:logging:
+    file: cmb_anomaly/structure_detector.py
+    line: 640
+    name: logging
+    type: import
+  cmb_anomaly/structure_detector.py:multiprocessing:
+    file: cmb_anomaly/structure_detector.py
+    line: 15
+    name: multiprocessing
+    type: import
+  cmb_anomaly/structure_detector.py:numpy:
+    file: cmb_anomaly/structure_detector.py
+    line: 21
+    name: numpy
+    type: import
+  cmb_anomaly/structure_detector.py:partial:
+    file: cmb_anomaly/structure_detector.py
+    line: 17
+    module: functools
+    name: partial
+    type: import_from
+  cmb_anomaly/structure_detector.py:print_backend_info:
+    file: cmb_anomaly/structure_detector.py
+    line: 643
+    module: array_backend
+    name: print_backend_info
+    type: import_from
+  cmb_anomaly/structure_detector.py:t:
+    file: cmb_anomaly/structure_detector.py
+    line: 22
+    module: scipy.stats
+    name: t
+    type: import_from
+  cmb_anomaly/structure_detector.py:tqdm:
+    file: cmb_anomaly/structure_detector.py
+    line: 527
+    module: tqdm
+    name: tqdm
+    type: import_from
+  cmb_anomaly/utils.py:array_load:
+    file: cmb_anomaly/utils.py
+    line: 3
+    module: array_backend
+    name: array_load
+    type: import_from
+  cmb_anomaly/utils.py:array_save:
+    file: cmb_anomaly/utils.py
+    line: 3
+    module: array_backend
+    name: array_save
+    type: import_from
+  cmb_anomaly/utils.py:cp:
+    file: cmb_anomaly/utils.py
+    line: 3
+    module: array_backend
+    name: cp
+    type: import_from
+  cmb_anomaly/utils.py:fits:
+    file: cmb_anomaly/utils.py
+    line: 4
+    module: astropy.io
+    name: fits
+    type: import_from
+  cmb_anomaly/utils.py:healpy:
+    file: cmb_anomaly/utils.py
+    line: 146
+    name: healpy
+    type: import
+  cmb_anomaly/utils.py:logging:
+    file: cmb_anomaly/utils.py
+    line: 1
+    name: logging
+    type: import
+  cmb_anomaly/utils.py:np:
+    file: cmb_anomaly/utils.py
+    line: 3
+    module: array_backend
+    name: np
+    type: import_from
+  cmb_anomaly/utils.py:numpy:
+    file: cmb_anomaly/utils.py
+    line: 2
+    name: numpy
+    type: import
+  cmb_anomaly/utils.py:os:
+    file: cmb_anomaly/utils.py
+    line: 5
+    name: os
+    type: import
+  main.py:argparse:
+    file: main.py
+    line: 1
+    name: argparse
+    type: import
+  main.py:ensure_dir_for_file:
+    file: main.py
+    line: 15
+    module: cmb_anomaly.utils
+    name: ensure_dir_for_file
+    type: import_from
+  main.py:find_similar_regions:
+    file: main.py
+    line: 11
+    module: cmb_anomaly.region_match
+    name: find_similar_regions
+    type: import_from
+  main.py:json:
+    file: main.py
+    line: 2
+    name: json
+    type: import
+  main.py:logging:
+    file: main.py
+    line: 3
+    name: logging
+    type: import
+  main.py:os:
+    file: main.py
+    line: 4
+    name: os
+    type: import
+  main.py:run_convert_command:
+    file: main.py
+    line: 6
+    module: cmb_anomaly.convert
+    name: run_convert_command
+    type: import_from
+  main.py:run_dust_correlation_analysis:
+    file: main.py
+    line: 10
+    module: cmb_anomaly.dust_correlation
+    name: run_dust_correlation_analysis
+    type: import_from
+  main.py:run_galactic_correlation_analysis:
+    file: main.py
+    line: 9
+    module: cmb_anomaly.galactic_correlation
+    name: run_galactic_correlation_analysis
+    type: import_from
+  main.py:run_multiscale_anomaly_search:
+    file: main.py
+    line: 7
+    module: cmb_anomaly.multiscale
+    name: run_multiscale_anomaly_search
+    type: import_from
+  main.py:run_scale_clustering_analysis:
+    file: main.py
+    line: 8
+    module: cmb_anomaly.scale_clustering
+    name: run_scale_clustering_analysis
+    type: import_from
+  main.py:run_structure_detection_from_paths:
+    file: main.py
+    line: 14
+    module: cmb_anomaly.structure_detector
+    name: run_structure_detection_from_paths
+    type: import_from
+  main.py:sys:
+    file: main.py
+    line: 5
+    name: sys
+    type: import
+  run_pipeline.py:analyze_dust_profile:
+    file: run_pipeline.py
+    line: 9
+    module: cmb_anomaly.dust_profile
+    name: analyze_dust_profile
+    type: import_from
+  run_pipeline.py:analyze_phase_profile:
+    file: run_pipeline.py
+    line: 10
+    module: cmb_anomaly.phase_profile
+    name: analyze_phase_profile
+    type: import_from
+  run_pipeline.py:argparse:
+    file: run_pipeline.py
+    line: 12
+    name: argparse
+    type: import
+  run_pipeline.py:astropy.io.fits:
+    file: run_pipeline.py
+    line: 100
+    name: astropy.io.fits
+    type: import
+  run_pipeline.py:compare_anomaly_catalogs:
+    file: run_pipeline.py
+    line: 8
+    module: cmb_anomaly.region_match
+    name: compare_anomaly_catalogs
+    type: import_from
+  run_pipeline.py:filter_unique_clusters:
+    file: run_pipeline.py
+    line: 11
+    module: cmb_anomaly.cluster_postprocess
+    name: filter_unique_clusters
+    type: import_from
+  run_pipeline.py:find_similar_regions:
+    file: run_pipeline.py
+    line: 8
+    module: cmb_anomaly.region_match
+    name: find_similar_regions
+    type: import_from
+  run_pipeline.py:get_centers:
+    file: run_pipeline.py
+    line: 21
+    module: cmb_anomaly.utils
+    name: get_centers
+    type: import_from
+  run_pipeline.py:glob:
+    file: run_pipeline.py
+    line: 73
+    name: glob
+    type: import
+  run_pipeline.py:healpy:
+    file: run_pipeline.py
+    line: 328
+    name: healpy
+    type: import
+  run_pipeline.py:json:
+    file: run_pipeline.py
+    line: 25
+    name: json
+    type: import
+  run_pipeline.py:logging:
+    file: run_pipeline.py
+    line: 457
+    name: logging
+    type: import
+  run_pipeline.py:numpy:
+    file: run_pipeline.py
+    line: 18
+    name: numpy
+    type: import
+  run_pipeline.py:os:
+    file: run_pipeline.py
+    line: 183
+    name: os
+    type: import
+  run_pipeline.py:pandas:
+    file: run_pipeline.py
+    line: 17
+    name: pandas
+    type: import
+  run_pipeline.py:print_backend_info:
+    file: run_pipeline.py
+    line: 22
+    module: cmb_anomaly.array_backend
+    name: print_backend_info
+    type: import_from
+  run_pipeline.py:run_convert_command:
+    file: run_pipeline.py
+    line: 3
+    module: cmb_anomaly.convert
+    name: run_convert_command
+    type: import_from
+  run_pipeline.py:run_dust_correlation_analysis:
+    file: run_pipeline.py
+    line: 7
+    module: cmb_anomaly.dust_correlation
+    name: run_dust_correlation_analysis
+    type: import_from
+  run_pipeline.py:run_galactic_correlation_analysis:
+    file: run_pipeline.py
+    line: 6
+    module: cmb_anomaly.galactic_correlation
+    name: run_galactic_correlation_analysis
+    type: import_from
+  run_pipeline.py:run_multiscale_anomaly_search:
+    file: run_pipeline.py
+    line: 4
+    module: cmb_anomaly.multiscale
+    name: run_multiscale_anomaly_search
+    type: import_from
+  run_pipeline.py:run_multiscale_anomaly_search_dust:
+    file: run_pipeline.py
+    line: 4
+    module: cmb_anomaly.multiscale
+    name: run_multiscale_anomaly_search_dust
+    type: import_from
+  run_pipeline.py:run_scale_clustering_analysis:
+    file: run_pipeline.py
+    line: 5
+    module: cmb_anomaly.scale_clustering
+    name: run_scale_clustering_analysis
+    type: import_from
+  run_pipeline.py:shutil:
+    file: run_pipeline.py
+    line: 278
+    name: shutil
+    type: import
+  run_pipeline.py:sys:
+    file: run_pipeline.py
+    line: 15
+    name: sys
+    type: import
+  run_pipeline.py:traceback:
+    file: run_pipeline.py
+    line: 16
+    name: traceback
+    type: import
+  setup.py:find_packages:
+    file: setup.py
+    line: 1
+    module: setuptools
+    name: find_packages
+    type: import_from
+  setup.py:setup:
+    file: setup.py
+    line: 1
+    module: setuptools
+    name: setup
+    type: import_from

@@ -1,0 +1,122 @@
+issues:
+  any_type_usage: []
+  classes_without_docstrings: []
+  files_too_large:
+  - exceeds_limit: 35
+    file: main.py
+    limit: 400
+    lines: 435
+  - exceeds_limit: 107
+    file: run_pipeline.py
+    limit: 400
+    lines: 507
+  - exceeds_limit: 347
+    file: cmb_anomaly/structure_detector.py
+    limit: 400
+    lines: 747
+  files_without_docstrings:
+  - main.py
+  - run_pipeline.py
+  - analyze_cmb.py
+  - setup.py
+  - cmb_anomaly/phase_profile.py
+  - cmb_anomaly/galactic_correlation.py
+  - cmb_anomaly/multiscale.py
+  - cmb_anomaly/region_match.py
+  - cmb_anomaly/known_regions.py
+  - cmb_anomaly/utils.py
+  - cmb_anomaly/scale_clustering.py
+  - cmb_anomaly/commands.py
+  - cmb_anomaly/__init__.py
+  - cmb_anomaly/dust_correlation.py
+  - cmb_anomaly/dust_profile.py
+  - cmb_anomaly/convert.py
+  generic_exception_usage: []
+  imports_in_middle: []
+  methods_with_pass: []
+  methods_without_docstrings:
+  - class: null
+    file: main.py
+    line: 73
+    method: get_path
+  - class: null
+    file: main.py
+    line: 82
+    method: main
+  - class: null
+    file: run_pipeline.py
+    line: 93
+    method: get_nside_from_npy
+  - class: null
+    file: run_pipeline.py
+    line: 99
+    method: get_nside_from_fits
+  - class: null
+    file: run_pipeline.py
+    line: 110
+    method: ensure_npy
+  - class: null
+    file: run_pipeline.py
+    line: 118
+    method: downgrade_to_nside
+  - class: null
+    file: run_pipeline.py
+    line: 158
+    method: fail
+  - class: null
+    file: run_pipeline.py
+    line: 174
+    method: load_config
+  - class: null
+    file: run_pipeline.py
+    line: 182
+    method: resolve_path
+  - class: null
+    file: run_pipeline.py
+    line: 222
+    method: print_step_indicator
+  - class: null
+    file: run_pipeline.py
+    line: 227
+    method: ensure_step_outputs
+  - class: null
+    file: run_pipeline.py
+    line: 250
+    method: run_step
+  - class: null
+    file: run_pipeline.py
+    line: 385
+    method: main
+  - class: null
+    file: run_pipeline.py
+    line: 460
+    method: get_param
+  - class: null
+    file: cmb_anomaly/phase_profile.py
+    line: 253
+    method: to_py_scalar
+  - class: null
+    file: cmb_anomaly/galactic_correlation.py
+    line: 6
+    method: to_py_scalar
+  - class: null
+    file: cmb_anomaly/dust_correlation.py
+    line: 10
+    method: to_py_scalar
+  - class: null
+    file: cmb_anomaly/dust_profile.py
+    line: 235
+    method: to_py_scalar
+  not_implemented_in_non_abstract: []
+summary:
+  any_type_usage: 0
+  classes_without_docstrings: 0
+  files_too_large: 3
+  files_without_docstrings: 16
+  generic_exception_usage: 0
+  imports_in_middle: 0
+  max_lines_limit: 400
+  methods_with_pass: 0
+  methods_without_docstrings: 18
+  not_implemented_in_non_abstract: 0
+  total_issues: 37

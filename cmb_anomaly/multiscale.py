@@ -1,8 +1,10 @@
 import healpy as hp
 import csv
 import matplotlib.pyplot as plt
-from .utils import get_centers
+from .utils import get_centers, ensure_dir_for_file, log_array_stats
 from .array_backend import cp, np, array_load, array_save
+import logging
+import numpy as np_real
 
 def to_py_scalar(x):
     """Convert cupy/numpy scalars to python float/int for CSV and stdlib compatibility."""
@@ -10,10 +12,47 @@ def to_py_scalar(x):
         return x.item()
     return x
 
+
+def filter_small_regions(results, min_npix=100):
+    """
+    Filter out regions with too few pixels (npix < min_npix).
+    Logs the number of filtered and remaining regions.
+    Args:
+        results (list of dict): List of region dicts.
+        min_npix (int): Minimum number of pixels required.
+    Returns:
+        list of dict: Filtered regions.
+    """
+    before = len(results)
+    filtered = [r for r in results if r['npix'] >= min_npix]
+    after = len(filtered)
+    logging.info(f"Filtered small regions (npix<{min_npix}): {before} -> {after}")
+    return filtered
+
+
+def aggregate_by_max_s(results):
+    """
+    Aggregates regions by center_pix, keeping only the record with max |S| for each.
+    Logs the number of unique regions.
+    Args:
+        results (list of dict): List of region dicts.
+    Returns:
+        list of dict: Aggregated regions.
+    """
+    unique = {}
+    for r in results:
+        pix = r['center_pix']
+        if pix not in unique or abs(r['S']) > abs(unique[pix]['S']):
+            unique[pix] = r
+    logging.info(f"Aggregated by max |S|: {len(results)} -> {len(unique)} unique regions")
+    return list(unique.values())
+
+
 def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, results_csv: str = 'results_anomalies_multi.csv',
-                                  radii_deg = None, step_deg: int = 5, top_n: int = 20, s_threshold: float = 5.0, centers=None) -> None:
+                                  radii_deg = None, step_deg: int = 5, top_n: int = 20, s_threshold: float = 5.0, centers=None, min_npix: int = 100) -> None:
     """
     Run automatic multiscale anomaly search on CMB map with or without mask.
+    Анализ масштабов строится по агрегированным кластерам (unique center_pix, max S).
     Args:
         temperature_path (str): Path to .npy file with temperature map
         mask_path (str or None): Path to .npy file with mask, or None/empty for no mask
@@ -22,49 +61,54 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
         step_deg (int): Step in degrees for grid
         top_n (int): Number of top anomalies to visualize
         s_threshold (float): Threshold for S to consider anomaly (default: 5.0)
+        min_npix (int): Minimum number of pixels in region (default: 100)
     """
-    print('Loading temperature...')
+    logging.info('Loading temperature...')
     temperature = array_load(temperature_path)
     if hasattr(temperature, 'get'):
         temperature = cp.asnumpy(temperature)
     temperature = np.asarray(temperature, dtype=np.float64)
-    # Фильтрация выбросов
+    log_array_stats("temperature", temperature)
+    # Outlier filtering
     n_outliers = np.sum(np.abs(temperature) > 1e20)
     if n_outliers > 0:
-        print(f"[CLEANUP] Temperature: {n_outliers} outliers (|val|>1e20) detected. Replacing with NaN.")
+        logging.warning(f"Temperature: {n_outliers} outliers (|val|>1e20) detected. Replacing with NaN.")
         temperature[np.abs(temperature) > 1e20] = np.nan
-    print(f"Temperature loaded: shape={temperature.shape}, dtype={temperature.dtype}")
-    # Очистка NaN/INF
+    # NaN/INF cleanup
     n_nan = np.sum(np.isnan(temperature))
     n_inf = np.sum(np.isinf(temperature))
     if n_nan > 0 or n_inf > 0:
-        print(f"[CLEANUP] Temperature: {n_nan} NaN, {n_inf} INF detected. Replacing with 0.")
+        logging.warning(f"Temperature: {n_nan} NaN, {n_inf} INF detected. Replacing with 0.")
         temperature = np.nan_to_num(temperature, nan=0.0, posinf=0.0, neginf=0.0)
+    log_array_stats("temperature (post-cleanup)", temperature)
     if mask_path:
-        print('Loading mask...')
+        logging.info('Loading mask...')
         mask = array_load(mask_path)
         if hasattr(mask, 'get'):
             mask = cp.asnumpy(mask)
         mask = np.asarray(mask, dtype=bool)
-        print(f"Mask loaded: shape={mask.shape}, dtype={mask.dtype}")
+        log_array_stats("mask", mask)
         if mask.shape != temperature.shape:
+            logging.error(f"Mask shape {mask.shape} does not match temperature shape {temperature.shape}")
             raise ValueError(f"Mask shape {mask.shape} does not match temperature shape {temperature.shape}")
         valid_pixels = mask
         if hasattr(valid_pixels, 'get'):
             valid_pixels = cp.asnumpy(valid_pixels)
         n_valid = np.sum(valid_pixels)
         n_masked = np.sum(~valid_pixels)
-        print(f"Mask applied: {n_valid} valid, {n_masked} masked pixels")
+        percent_valid = 100.0 * n_valid / valid_pixels.size
+        logging.info(f"Mask applied: {n_valid} valid, {n_masked} masked pixels ({percent_valid:.2f}% valid)")
         temperature_masked = np.where(valid_pixels, temperature, np.nan)
         n_nan_masked = np.sum(np.isnan(temperature_masked))
         n_inf_masked = np.sum(np.isinf(temperature_masked))
         if n_nan_masked > 0 or n_inf_masked > 0:
-            print(f"[CLEANUP] After mask: {n_nan_masked} NaN, {n_inf_masked} INF detected. Replacing with 0.")
+            logging.warning(f"After mask: {n_nan_masked} NaN, {n_inf_masked} INF detected. Replacing with 0.")
             temperature_masked = np.nan_to_num(temperature_masked, nan=0.0, posinf=0.0, neginf=0.0)
+        log_array_stats("temperature_masked", temperature_masked)
         mean_global = np.nanmean(temperature_masked)
         std_global = np.nanstd(temperature_masked)
     else:
-        print('No mask: using all pixels')
+        logging.info('No mask: using all pixels')
         valid_pixels = np.ones_like(temperature, dtype=bool)
         temperature_masked = temperature
         mean_global = np.mean(temperature)
@@ -72,7 +116,7 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
     NSIDE = hp.npix2nside(len(temperature))
     npix = len(temperature)
     if mask_path:
-        print(f"[INFO] Using {np.sum(valid_pixels)} valid pixels out of {npix}")
+        logging.info(f"Using {np.sum(valid_pixels)} valid pixels out of {npix}")
     if centers is None:
         centers = get_centers(NSIDE, step_deg)
     if hasattr(centers, 'get'):
@@ -86,8 +130,9 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
     except ImportError:
         tqdm = None
         use_tqdm = False
-    print(f"[PROGRESS] Всего радиусов: {len(radii_deg)}, центров: {len(centers)}")
-    print('Scanning sky...')
+    logging.info(f"Total radii: {len(radii_deg)}, centers: {len(centers)}")
+    logging.info('Scanning sky...')
+    n_total_windows = 0
     for radius_deg in tqdm(radii_deg, desc='Radii', disable=not use_tqdm):
         radius_rad = np.deg2rad(radius_deg)
         center_iter = tqdm(centers, desc=f'Centers (r={radius_deg}°)', leave=False, disable=not use_tqdm)
@@ -100,72 +145,75 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
             if mask_path:
                 region_pix = region_pix[valid_pixels[region_pix]]
             vals = temperature[region_pix]
-            # Очистка NaN/INF в регионе
+            # NaN/INF cleanup in region
             vals = np.asarray(vals, dtype=np.float64)
             n_nan_r = np.sum(np.isnan(vals))
             n_inf_r = np.sum(np.isinf(vals))
             if n_nan_r > 0 or n_inf_r > 0:
-                print(f"[CLEANUP] Region: {n_nan_r} NaN, {n_inf_r} INF detected for center {pix}, radius {radius_deg}. Replacing with 0.")
+                logging.warning(f"Region: {n_nan_r} NaN, {n_inf_r} INF detected for center {pix}, radius {radius_deg}. Replacing with 0.")
                 vals = np.nan_to_num(vals, nan=0.0, posinf=0.0, neginf=0.0)
-            if len(vals) < 100:
-                continue
-            mean = np.mean(vals)
-            std = np.std(vals)
-            S = np.abs(mean - mean_global) / std_global
-            theta, phi = hp.pix2ang(NSIDE, int(pix))
-            l = np.rad2deg(phi)
-            b = 90 - np.rad2deg(theta)
+            n_total_windows += 1
             results.append({
                 'center_pix': int(pix),
                 'radius_deg': float(radius_deg),
-                'S': to_py_scalar(S),
-                'mean': to_py_scalar(mean),
-                'std': to_py_scalar(std),
+                'S': to_py_scalar(np.abs(np.mean(vals) - mean_global) / std_global),
+                'mean': to_py_scalar(np.mean(vals)),
+                'std': to_py_scalar(np.std(vals)),
                 'npix': int(len(region_pix)),
-                'l': to_py_scalar(l),
-                'b': to_py_scalar(b)
+                'l': to_py_scalar(np.rad2deg(hp.pix2ang(NSIDE, int(pix))[1])),
+                'b': to_py_scalar(90 - np.rad2deg(hp.pix2ang(NSIDE, int(pix))[0]))
             })
             if not use_tqdm and i % 100 == 0:
-                print(f"  [PROGRESS] r={radius_deg}°: {i+1}/{len(centers)} центров обработано")
+                logging.info(f"  [PROGRESS] r={radius_deg}°: {i+1}/{len(centers)} centers processed")
         if not use_tqdm:
-            print(f'  Done radius {radius_deg}°')
+            logging.info(f'  Done radius {radius_deg}°')
+    logging.info(f"Total windows processed: {n_total_windows}, results collected: {len(results)}")
+    if len(results) == 0:
+        logging.warning("No regions/windows found at all! Check input data and parameters.")
+    # Фильтрация по npix
+    results_npix = filter_small_regions(results, min_npix=min_npix)
+    logging.info(f"After min_npix={min_npix} filter: {len(results_npix)} regions remain.")
+    if len(results_npix) == 0:
+        logging.warning("No regions left after min_npix filter!")
     # Фильтрация по S
-    filtered = [r for r in results if r['S'] > s_threshold]
-    # Для каждого center_pix оставляем только запись с максимальным S (по модулю)
-    unique = {}
-    for r in filtered:
-        pix = r['center_pix']
-        if pix not in unique or abs(r['S']) > abs(unique[pix]['S']):
-            unique[pix] = r
-    final_results = list(unique.values())
-    print(f"[DEBUG] Итоговых уникальных аномалий после фильтрации по S: {len(final_results)}")
-    # Сохраняем только уникальные и значимые аномалии
-    # --- после вычислений ---
-    # Сохраняем массив результатов в кэш (npy)
+    filtered = [r for r in results_npix if r['S'] > s_threshold]
+    logging.info(f"After S>{s_threshold} filter: {len(filtered)} regions remain.")
+    if len(filtered) == 0:
+        logging.warning("No regions left after S filter!")
+    # Агрегация по max |S| для каждого центра
+    final_results = aggregate_by_max_s(filtered)
+    logging.info(f"After aggregation: {len(final_results)} unique regions remain.")
+    if len(final_results) == 0:
+        logging.warning("No regions left after aggregation!")
+    # Save only unique and significant anomalies
+    # --- after calculations ---
+    # Save results array to cache (npy)
     cache_npy = results_csv.replace('.csv', '.npy')
+    ensure_dir_for_file(cache_npy)
     final_results_np = np.array([
         [r['center_pix'], r['radius_deg'], r['S'], r['mean'], r['std'], r['npix'], r['l'], r['b']]
         for r in final_results
     ], dtype=np.float64)
     np.save(cache_npy, final_results_np)
-    print(f'Cached anomaly regions saved to {cache_npy}')
-    # --- далее сохранение в csv как было ---
+    logging.info(f'Cached anomaly regions saved to {cache_npy} (count: {len(final_results_np)})')
+    # --- save to csv as before ---
+    ensure_dir_for_file(results_csv)
     with open(results_csv, 'w', newline='') as csvfile:
         fieldnames = ['center_pix', 'radius_deg', 'S', 'mean', 'std', 'npix', 'l', 'b']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for r in final_results:
             writer.writerow({k: to_py_scalar(v) for k, v in r.items()})
-    print(f'Filtered anomaly regions saved to {results_csv}')
-    # Визуализация топ-N (по S)
+    logging.info(f'Filtered anomaly regions saved to {results_csv} (count: {len(final_results)})')
+    # Visualization of top-N (by S)
     results = sorted(final_results, key=lambda x: abs(x['S']), reverse=True)
-    print(f'\nTop {top_n} most anomalous regions (multi-radius):')
-    print(f"{'#':<2} {'pix':<8} {'r':>3} {'S':>8} {'mean':>10} {'std':>10} {'npix':>6} {'l':>7} {'b':>7}")
+    logging.info(f'Top {top_n} most anomalous regions (multi-radius):')
+    logging.info(f"{'#':<2} {'pix':<8} {'r':>3} {'S':>8} {'mean':>10} {'std':>10} {'npix':>6} {'l':>7} {'b':>7}")
     for i, r in enumerate(results[:top_n]):
-        print(f"{i+1:<2} {r['center_pix']:<8} {r['radius_deg']:>3} {r['S']:>8.2f} {r['mean']:>10.3e} {r['std']:>10.3e} {r['npix']:>6} {r['l']:7.2f} {r['b']:7.2f}")
+        logging.info(f"{i+1:<2} {r['center_pix']:<8} {r['radius_deg']:>3} {r['S']:>8.2f} {r['mean']:>10.3e} {r['std']:>10.3e} {r['npix']:>6} {r['l']:7.2f} {r['b']:7.2f}")
     anomaly_pix = np.array([r['center_pix'] for r in results[:top_n]], dtype=int)
     coords = np.array(hp.pix2ang(NSIDE, anomaly_pix))
-    # --- GPU/CPU совместимость ---
+    # --- GPU/CPU compatibility ---
     temp_masked_cpu = cp.asnumpy(temperature_masked) if hasattr(temperature_masked, 'get') or str(type(temperature_masked)).startswith('<class "cupy.') else temperature_masked
     temp_cpu = cp.asnumpy(temperature) if hasattr(temperature, 'get') or str(type(temperature)).startswith('<class "cupy.') else temperature
     anomaly_pix_cpu = cp.asnumpy(anomaly_pix) if hasattr(anomaly_pix, 'get') or str(type(anomaly_pix)).startswith('<class "cupy.') else anomaly_pix
@@ -173,6 +221,7 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
     hp.mollview(temp_masked_cpu, title=f'CMB Temperature with Top-{top_n} Multi-Scale Anomalies', unit='K', cmap='coolwarm', min=np.nanpercentile(temp_cpu, 0.5), max=np.nanpercentile(temp_cpu, 99.5))
     hp.projscatter(coords_cpu[1], np.pi/2 - coords_cpu[0], lonlat=True, s=80, c='black', marker='o', label='Anomaly')
     plt.legend()
+    ensure_dir_for_file('cmb_mollweide_anomalies_multi.png')
     plt.savefig('cmb_mollweide_anomalies_multi.png', dpi=200)
     plt.figure()
     for i, r0 in enumerate(results[:5]):
@@ -183,6 +232,7 @@ def run_multiscale_anomaly_search(temperature_path: str, mask_path: str = None, 
     plt.ylabel('S (anomaly)')
     plt.title('S(r) for Top-5 Anomalies')
     plt.legend()
+    ensure_dir_for_file('cmb_S_vs_r.png')
     plt.savefig('cmb_S_vs_r.png', dpi=200)
 
 def run_multiscale_anomaly_search_dust(dust_path: str, mask_path: str = None, results_csv: str = 'results_dust_anomalies.csv',
@@ -199,7 +249,7 @@ def run_multiscale_anomaly_search_dust(dust_path: str, mask_path: str = None, re
     """
     print('Loading dust map...')
     dust = array_load(dust_path)
-    dust = np.asarray(dust, dtype=np.float64)
+    dust = np_real.asarray(dust, dtype=np.float64)
     # Фильтрация выбросов
     n_outliers = np.sum(np.abs(dust) > 1e20)
     if n_outliers > 0:

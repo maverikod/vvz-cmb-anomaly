@@ -1,0 +1,15 @@
+{
+  "data_dir": "testing/data",
+  "cache_dir": "testing/cache",
+  "results_dir": "testing/results",
+  "data_file": "cmb_test_nside64.npy",
+  "mask_file": "mask_test_nside64.npy",
+  "dust_file": "dust_test_nside64.npy",
+  "hi_file": "hi_test_nside64.npy",
+  "s_threshold": 0.0,
+  "step_deg": 30,
+  "top_n": 100,
+  "min_npix": 1,
+  "radii_deg": [1,2,3],
+  "log_level": "INFO"
+} 

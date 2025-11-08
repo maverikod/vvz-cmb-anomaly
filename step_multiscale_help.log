@@ -1,0 +1,14 @@
+usage: main.py multiscale-anomaly [-h] --temperature TEMPERATURE [--mask MASK]
+                                  [--no-mask] [--results RESULTS]
+                                  [--step STEP] [--top TOP]
+
+options:
+  -h, --help            show this help message and exit
+  --temperature TEMPERATURE
+                        Path to .npy file with temperature map
+  --mask MASK           Path to .npy file with mask (omit or use --no-mask for
+                        no mask)
+  --no-mask             Do not use any mask (analyze all pixels)
+  --results RESULTS     Path to output CSV file
+  --step STEP           Step in degrees for grid (default: 5)
+  --top TOP             Number of top anomalies to visualize (default: 20)

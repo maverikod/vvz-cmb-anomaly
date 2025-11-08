@@ -1,0 +1,4 @@
+usage: main.py [-h] [-c CONFIG] [--help-config] [--help-sequence]
+               {convert,multiscale-anomaly,scale-clustering,galactic-correlation,dust-correlation,region-match}
+               ...
+main.py: error: argument command: invalid choice: 'multiscale' (choose from 'convert', 'multiscale-anomaly', 'scale-clustering', 'galactic-correlation', 'dust-correlation', 'region-match')

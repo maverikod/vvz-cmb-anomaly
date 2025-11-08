@@ -1,7 +1,7 @@
 import os
 import shutil
 from cmb_anomaly.convert import run_convert_command
-from cmb_anomaly.multiscale import run_multiscale_anomaly_search
+from cmb_anomaly.multiscale import run_multiscale_anomaly_search, run_multiscale_anomaly_search_dust
 from cmb_anomaly.scale_clustering import run_scale_clustering_analysis
 from cmb_anomaly.galactic_correlation import run_galactic_correlation_analysis
 from cmb_anomaly.dust_correlation import run_dust_correlation_analysis
@@ -21,25 +21,35 @@ import json
 from cmb_anomaly.utils import get_centers
 from cmb_anomaly.array_backend import print_backend_info
 
+# Загрузка конфигурации путей
+import json
+CONFIG_PATH = 'config.json' if os.path.exists('config.json') else 'config.example.json'
+with open(CONFIG_PATH, 'r') as f:
+    config = json.load(f)
+data_dir = config.get('data_dir', 'data')
+cache_dir = config.get('cache_dir', 'cache')
+results_dir = config.get('results_dir', 'results')
+
 # Пути к исходным данным
-CMB_FITS = 'data/COM_CMB_IQU-smica_2048_R3.00_full.fits'
-MASK_FITS = 'data/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits'
-DUST_FITS = 'data/COM_CompMap_dust-commrul_2048_R1.00.fits'
-HI_FITS = 'data/NHI_HPX.fits.gz'
-KNOWN_YAML = 'data/cmb_anomalies.yaml'  # если есть
+CMB_FITS = os.path.join(data_dir, 'COM_CMB_IQU-smica_2048_R3.00_full.fits')
+MASK_FITS = os.path.join(data_dir, 'COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
+DUST_FITS = os.path.join(data_dir, 'COM_CompMap_dust-commrul_2048_R1.00.fits')
+HI_FITS = os.path.join(data_dir, 'NHI_HPX.fits.gz')
+KNOWN_YAML = os.path.join(data_dir, 'cmb_anomalies.yaml')
 
 # Каталоги результатов
-DIR_CONVERT = 'results/01_convert'
-DIR_MULTISCALE = 'results/02_multiscale'
-DIR_CLUSTER = 'results/03_clustering'
-DIR_GALCORR = 'results/04_galactic_corr'
-DIR_DUSTCORR = 'results/05_dust_corr'
-DIR_REGION = 'results/06_region_match'
-DIR_COMPARE = 'results/07_catalog_compare'
-DIR_DUSTPROFILE = 'results/08_dust_profile'
-DIR_PHASEPROFILE = 'results/09_phase_profile'
+DIR_CONVERT = os.path.join(results_dir, '01_convert')
+DIR_MULTISCALE = os.path.join(results_dir, '02_multiscale')
+DIR_CLUSTER = os.path.join(results_dir, '03_clustering')
+DIR_GALCORR = os.path.join(results_dir, '04_galactic_corr')
+DIR_DUSTCORR = os.path.join(results_dir, '05_dust_corr')
+DIR_REGION = os.path.join(results_dir, '06_region_match')
+DIR_COMPARE = os.path.join(results_dir, '07_catalog_compare')
+DIR_DUSTPROFILE = os.path.join(results_dir, '08_dust_profile')
+DIR_PHASEPROFILE = os.path.join(results_dir, '09_phase_profile')
 
-CACHE_DIR = 'cache'
+CACHE_DIR = cache_dir
+# Автоматическое создание структуры каталогов
 os.makedirs(CACHE_DIR, exist_ok=True)
 for d in [DIR_CONVERT, DIR_MULTISCALE, DIR_CLUSTER, DIR_GALCORR, DIR_DUSTCORR, DIR_REGION, DIR_COMPARE, DIR_DUSTPROFILE, DIR_PHASEPROFILE]:
     os.makedirs(d, exist_ok=True)
@@ -169,6 +179,12 @@ def load_config(config_path=None):
                 return json.load(f)
     return {}
 
+def resolve_path(path, data_dir):
+    import os
+    if os.path.isabs(path):
+        return path
+    return os.path.join(data_dir, path)
+
 # Описание зависимостей между шагами
 STEP_DEPENDENCIES = {
     'convert': [],
@@ -229,7 +245,10 @@ def ensure_step_outputs(step, call_stack=None, use_mask=False, s_threshold=5.0, 
 
 # Обёртка для запуска шага
 
+anomaly_file = None
+
 def run_step(step, use_mask=False, s_threshold=5.0, step_deg=5, top_n=20, radii_deg=None, centers=None):
+    global anomaly_file
     if step == 'convert':
         # Конвертация FITS→NPY
         for path, name, src in [
@@ -251,7 +270,14 @@ def run_step(step, use_mask=False, s_threshold=5.0, step_deg=5, top_n=20, radii_
         temperature_npy = os.path.join(CACHE_DIR, 'cmb_temperature.npy')
         mask_npy = os.path.join(CACHE_DIR, 'mask_common.npy')
         multiscale_csv = os.path.join(DIR_MULTISCALE, 'results_anomalies_multi.csv')
-        if not is_file_valid(multiscale_csv, 'csv'):
+        # Если anomaly_file задан и существует — использовать его, не рассчитывать
+        if anomaly_file and os.path.exists(anomaly_file):
+            print_step_indicator(step, f"использую готовый файл аномалий: {anomaly_file}")
+            # Копируем/используем anomaly_file как multiscale_csv для совместимости пайплайна
+            if anomaly_file != multiscale_csv:
+                import shutil
+                shutil.copy(anomaly_file, multiscale_csv)
+        elif not is_file_valid(multiscale_csv, 'csv'):
             safe_remove(multiscale_csv)
             print_step_indicator(step, "расчёт поиска аномалий (multiscale)")
             try:
@@ -379,6 +405,37 @@ def main():
     parser.add_argument('--run', action='store_true', help='Запустить полный пайплайн (самый низкий приоритет)')
     args = parser.parse_args()
 
+    # Загружаем config только после парсинга аргументов
+    config = load_config(args.config)
+    data_dir = config.get('data_dir', 'data')
+    cache_dir = config.get('cache_dir', 'cache')
+    results_dir = config.get('results_dir', 'results')
+
+    # Пути к исходным данным
+    global CMB_FITS, MASK_FITS, DUST_FITS, HI_FITS, KNOWN_YAML
+    CMB_FITS = os.path.join(data_dir, 'COM_CMB_IQU-smica_2048_R3.00_full.fits')
+    MASK_FITS = os.path.join(data_dir, 'COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
+    DUST_FITS = os.path.join(data_dir, 'COM_CompMap_dust-commrul_2048_R1.00.fits')
+    HI_FITS = os.path.join(data_dir, 'NHI_HPX.fits.gz')
+    KNOWN_YAML = os.path.join(data_dir, 'cmb_anomalies.yaml')
+
+    # Каталоги результатов
+    global DIR_CONVERT, DIR_MULTISCALE, DIR_CLUSTER, DIR_GALCORR, DIR_DUSTCORR, DIR_REGION, DIR_COMPARE, DIR_DUSTPROFILE, DIR_PHASEPROFILE, CACHE_DIR
+    DIR_CONVERT = os.path.join(results_dir, '01_convert')
+    DIR_MULTISCALE = os.path.join(results_dir, '02_multiscale')
+    DIR_CLUSTER = os.path.join(results_dir, '03_clustering')
+    DIR_GALCORR = os.path.join(results_dir, '04_galactic_corr')
+    DIR_DUSTCORR = os.path.join(results_dir, '05_dust_corr')
+    DIR_REGION = os.path.join(results_dir, '06_region_match')
+    DIR_COMPARE = os.path.join(results_dir, '07_catalog_compare')
+    DIR_DUSTPROFILE = os.path.join(results_dir, '08_dust_profile')
+    DIR_PHASEPROFILE = os.path.join(results_dir, '09_phase_profile')
+    CACHE_DIR = cache_dir
+    # Автоматическое создание структуры каталогов
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    for d in [DIR_CONVERT, DIR_MULTISCALE, DIR_CLUSTER, DIR_GALCORR, DIR_DUSTCORR, DIR_REGION, DIR_COMPARE, DIR_DUSTPROFILE, DIR_PHASEPROFILE]:
+        os.makedirs(d, exist_ok=True)
+
     # Если только --help, выводим подробную справку и завершаем работу
     if len(sys.argv) == 2 and (sys.argv[1] == '--help' or sys.argv[1] == '-h'):
         parser.print_help()
@@ -396,7 +453,10 @@ CMB Anomaly Full Pipeline
 """)
         return
 
-    config = load_config(args.config)
+    log_level = config.get('log_level', 'WARNING').upper()
+    import logging
+    logging.basicConfig(level=getattr(logging, log_level, logging.WARNING))
+
     def get_param(name, default=None, cast=None):
         val = getattr(args, name, None)
         if val is not None:
@@ -415,6 +475,9 @@ CMB Anomaly Full Pipeline
         radii_deg = config['radii_deg']
     else:
         radii_deg = list(range(1, 16))
+
+    # Получение пути к файлу аномалий из конфига или аргументов
+    anomaly_file = config.get('anomaly_file') or config.get('anomaly_yaml')
 
     # clear, only, use-mask — приоритет выше run
     if args.clear_all:
